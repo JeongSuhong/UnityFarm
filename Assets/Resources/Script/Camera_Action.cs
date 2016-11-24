@@ -3,7 +3,7 @@ using System.Collections;
 
 public class Camera_Action : MonoBehaviour
 {
-
+    public bool Not_CameraMoving = false;
     public float DragSpeed = 2;
     private Vector3 dragPosition;
 
@@ -20,14 +20,23 @@ public class Camera_Action : MonoBehaviour
         }
 
         // 클릭중이 아니면 함수를 종료한다.
-        if (!Input.GetMouseButton(0)) return;
+        if (!Input.GetMouseButton(0) || Not_CameraMoving) return;
 
         //  ScreenToViewportPoint(Position) = Position을 화면 공간에서 뷰포트(카메라) 공간으로 변경시킵니다.
-        // 밑에 소스는 물어보는걸로.
+        // Vector3 A - Vector3 B을 하면 A에서 B로가는 방향값만 나온다. (왼쪽? 오른쪽? )
         Vector3 pos = Camera.main.ScreenToViewportPoint(Input.mousePosition - dragPosition);
         Vector3 move = new Vector3(pos.x * DragSpeed, 0, pos.y * DragSpeed);
+
 
         transform.Translate(move, Space.World);
     }
 
+    public void Set_NotCameraMoving()
+    {
+        Not_CameraMoving = true;
+    }
+    public void Set_CameraMoving()
+    {
+        Not_CameraMoving = false;
+    }
 }
