@@ -4,7 +4,7 @@ using System.Collections;
 public class Camera_Action : MonoBehaviour
 {
     public bool Not_CameraMoving = false;
-    public float DragSpeed = 2;
+    public float DragSpeed = 1;
     private Vector3 dragPosition;
 
 //  void Update() 는 일반적인 연산 및 Translate로 이동할시 사용
