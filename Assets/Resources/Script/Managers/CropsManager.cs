@@ -1,18 +1,82 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
-public enum CROP
+public class CropsManager : MonoBehaviour
+{ 
+    Dictionary<int, CropInfo> CropsInfo = new Dictionary<int, CropInfo>();
+
+    public UIGrid Grid_Select_Crops;
+    public GameObject Select_Crop_UI_Prefab;
+
+    private static CropsManager instance = null;
+
+    public static CropsManager Get_Inctance()
+    {
+        if (instance == null)
+        {
+            instance = FindObjectOfType(typeof(CropsManager)) as CropsManager;
+        }
+
+        if (null == instance)
+        {
+            GameObject obj = new GameObject("CropsManager ");
+            instance = obj.AddComponent(typeof(CropsManager)) as CropsManager;
+
+            Debug.Log("Fail to get CropsManager Instance");
+        }
+        return instance;
+    }
+
+    void Awake()
+    {
+        instance = this;
+
+        CropInfo testInfo = new CropInfo();
+        testInfo.ID = 3;
+        testInfo.Name = "사탕무";
+        testInfo.SpriteName = "radish";
+        testInfo.Grow_Time = 10;
+        testInfo.Selling_Price = 30;
+        testInfo.Price = 10;
+
+        CropsInfo.Add(testInfo.ID, testInfo);
+
+        foreach(KeyValuePair<int, CropInfo> crop in CropsInfo)
+        {
+            Set_SelectCropUI(crop.Value);
+        }
+    }
+
+    public CropInfo Get_CropInfo(int ID)
+    {
+        if(CropsInfo.ContainsKey(ID))
+        {
+            return CropsInfo[ID];
+        }
+        else
+        {
+            return null;
+        }
+    }
+
+    void Set_SelectCropUI(CropInfo info)
+    {
+        GameObject obj = Instantiate(Select_Crop_UI_Prefab, Grid_Select_Crops.transform) as GameObject;
+        obj.transform.localScale = Vector3.one;
+        obj.name = info.Name;
+        obj.GetComponent<Crops_UI_Action>().Set_Crop_info(info);
+
+        Grid_Select_Crops.repositionNow = true;
+    }
+}
+
+public class CropInfo
 {
-    NONE = -1,
-    CARROT = 0,
-    LETTUCE,
-    PUMPKIN,
-    RADISH,
-    SUNFLOWER,
-    TOMATO,
-    MAX,
-};
-
-
-public class CropsManager : MonoBehaviour {
+    public int ID;
+    public string Name;
+    public string SpriteName;
+    public int Grow_Time;
+    public int Selling_Price;
+    public int Price;
 }

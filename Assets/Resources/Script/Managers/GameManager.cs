@@ -25,33 +25,38 @@ public class GameManager : MonoBehaviour
     void Awake()
     {
         instance = this;
+        StartCoroutine(C_Update());
     }
 
     // Update is called once per frame
-    void Update()
+    IEnumerator C_Update()
     {
-
-        if (Input.GetMouseButtonDown(0))
+        while (true)
         {
-            // 카메라에서 화면상의 마우스 좌표에 해당하는 공간으로 레이를 쏜다.
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
-            // Physics.Raycast(쏜 레이 정보, 충돌 정보, 거리)
-            //  => 충돌이 되면 true를 리턴하면서 충돌 정보를 확인 할 수 있다.
-            if (Physics.Raycast(ray, out hit, Mathf.Infinity))
+            if (Input.GetMouseButtonDown(0))
             {
-                GameObject obj = hit.collider.gameObject;
+                // 카메라에서 화면상의 마우스 좌표에 해당하는 공간으로 레이를 쏜다.
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                RaycastHit hit;
+                // Physics.Raycast(쏜 레이 정보, 충돌 정보, 거리)
+                //  => 충돌이 되면 true를 리턴하면서 충돌 정보를 확인 할 수 있다.
+                if (Physics.Raycast(ray, out hit, Mathf.Infinity))
+                {
+                    GameObject obj = hit.collider.gameObject;
 
-                if (obj.CompareTag("EventOBJ"))
-                {
-                    Debug.Log("Click EventOBJ!");
+                    if (obj.CompareTag("EventOBJ"))
+                    {
+                        Debug.Log("Click EventOBJ!");
+                    }
+                    else if (obj.CompareTag("Farm"))
+                    {
+                        obj.GetComponent<Farm_Action>().Ready_Crops();
+                    }
                 }
-                else if (obj.CompareTag("Farm"))
-                {
-                    obj.GetComponent<Farm_Action>().Ready_Crops();
-                }
+
             }
 
+            yield return null;
         }
     }
 
@@ -63,9 +68,10 @@ public class GameManager : MonoBehaviour
     }
     IEnumerator C_Plant_Drag_Farm()
     {
+        StopCoroutine(C_Update());
         while (true)
         {
-            if (Input.GetMouseButtonDown(0))
+            if (Input.GetMouseButton(0))
             {
                 // 카메라에서 화면상의 마우스 좌표에 해당하는 공간으로 레이를 쏜다.
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -79,7 +85,7 @@ public class GameManager : MonoBehaviour
 
                     if (obj.CompareTag("Farm"))
                     {
-                        obj.GetComponent<Farm_Action>().Plant_Crop(Select_Crops_Action.Get_Inctance().Select_Crop_ID);
+                        obj.GetComponent<Farm_Action>().Plant_Crop();
                     }
                 }
             }
@@ -87,5 +93,13 @@ public class GameManager : MonoBehaviour
             yield return null;
 
         }
+    }
+
+    public void Set_BasicSetting()
+    {
+        StopAllCoroutines();
+        StartCoroutine(C_Update());
+
+        Camera_Action.Get_Inctance().Set_CameraMoving();
     }
 }

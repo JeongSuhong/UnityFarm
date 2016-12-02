@@ -4,6 +4,7 @@ using System.Collections;
 public class Select_Crops_Action : MonoBehaviour {
 
     public int Select_Crop_ID = 0;
+    public GameObject Select_Farm_UI;
 
     private static Select_Crops_Action instance = null;
 
@@ -32,16 +33,25 @@ public class Select_Crops_Action : MonoBehaviour {
     public void Select_Crop(int crop_id)
     {
         Select_Crop_ID = crop_id;
-        GameManager.Get_Inctance().Plant_Drag_Farm();
+
+        Select_Farm_UI.GetComponent<Select_Farm_Action>().Select_Farm("radish");
+
+        NotView_SelectCrops_UI();
+    }
+
+    public void Set_SelectCrop_Nothing()
+    {
+        Select_Crop_ID = 0;
     }
 
     public void View_SelectCrops_UI()
     {
+        Select_Crop_ID = 0;
+        Camera_Action.Get_Inctance().Set_CameraMoving();
         GetComponent<UIPanel>().alpha = 1;
     }
     public void NotView_SelectCrops_UI()
     {
-        Select_Crop_ID = 0;
         GetComponent<UIPanel>().alpha = 0;
     }
 
