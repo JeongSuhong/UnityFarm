@@ -23,25 +23,7 @@ public class Crops_UI_Action : Base_Button_Action
         Name.text = info.Name;
         Price.text = info.Price.ToString();
 
-        string time = "";
-        int second = info.Grow_Time % 60;
-        int Minute = info.Grow_Time / 60;
-        int Hour = Minute / 60;
-
-        if(Hour != 0)
-        {
-            time += Hour.ToString() + "시 ";
-        }
-        if(Minute != 0)
-        {
-            time += Minute.ToString() + "분 ";
-        }
-
-        time += second.ToString() + "초";
-
-
-
-        GrowTime.text = time;
+        GrowTime.text = GameManager.Get_Inctance().Set_Text_Time(info.Grow_Time); ;
     }
 
     public void Select_Crop()

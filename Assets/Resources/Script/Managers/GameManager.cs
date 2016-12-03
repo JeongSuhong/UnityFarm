@@ -25,7 +25,7 @@ public class GameManager : MonoBehaviour
     void Awake()
     {
         instance = this;
-        StartCoroutine(C_Update());
+        StartCoroutine("C_Update");
     }
 
     // Update is called once per frame
@@ -50,7 +50,7 @@ public class GameManager : MonoBehaviour
                     }
                     else if (obj.CompareTag("Farm"))
                     {
-                        obj.GetComponent<Farm_Action>().Ready_Crops();
+                        obj.GetComponent<Farm_Action>().Check_Action_Farm();
                     }
                 }
 
@@ -62,13 +62,13 @@ public class GameManager : MonoBehaviour
 
     public void Plant_Drag_Farm()
     {
-        if(Select_Crops_Action.Get_Inctance().Select_Crop_ID == 0) { return; }
+        if (Select_Crops_Action.Get_Inctance().Select_Crop_ID == 0) { return; }
 
+        StopCoroutine("C_Update");
         StartCoroutine(C_Plant_Drag_Farm());
     }
     IEnumerator C_Plant_Drag_Farm()
     {
-        StopCoroutine(C_Update());
         while (true)
         {
             if (Input.GetMouseButton(0))
@@ -98,8 +98,29 @@ public class GameManager : MonoBehaviour
     public void Set_BasicSetting()
     {
         StopAllCoroutines();
-        StartCoroutine(C_Update());
+        StartCoroutine("C_Update");
 
         Camera_Action.Get_Inctance().Set_CameraMoving();
+    }
+
+    public string Set_Text_Time(int time)
+    {
+        string text_time = "";
+        int second = (int)time % 60;
+        int Minute = (int)time / 60;
+        int Hour = Minute / 60;
+
+        if (Hour != 0)
+        {
+            text_time += Hour.ToString() + "시 ";
+        }
+        if (Minute != 0)
+        {
+            text_time += Minute.ToString() + "분 ";
+        }
+
+            text_time += second.ToString() + "초";
+
+        return text_time;
     }
 }

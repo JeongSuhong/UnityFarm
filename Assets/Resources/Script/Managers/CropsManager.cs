@@ -36,7 +36,7 @@ public class CropsManager : MonoBehaviour
         testInfo.ID = 3;
         testInfo.Name = "사탕무";
         testInfo.SpriteName = "radish";
-        testInfo.Grow_Time = 10;
+        testInfo.Grow_Time = 5;
         testInfo.Selling_Price = 30;
         testInfo.Price = 10;
 
