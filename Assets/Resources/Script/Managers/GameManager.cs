@@ -3,6 +3,7 @@ using System.Collections;
 
 public class GameManager : MonoBehaviour
 {
+    public bool Is_ViewUI = false;
     private static GameManager instance = null;
 
     public static GameManager Get_Inctance()
@@ -33,6 +34,8 @@ public class GameManager : MonoBehaviour
     {
         while (true)
         {
+            if (Is_ViewUI) { yield return null; continue; }
+
             if (Input.GetMouseButtonDown(0))
             {
                 // 카메라에서 화면상의 마우스 좌표에 해당하는 공간으로 레이를 쏜다.
@@ -71,6 +74,8 @@ public class GameManager : MonoBehaviour
     {
         while (true)
         {
+            if (Is_ViewUI) { yield return null; continue; }
+
             if (Input.GetMouseButton(0))
             {
                 // 카메라에서 화면상의 마우스 좌표에 해당하는 공간으로 레이를 쏜다.
@@ -122,5 +127,16 @@ public class GameManager : MonoBehaviour
             text_time += second.ToString() + "초";
 
         return text_time;
+    }
+
+    public void Set_ViewUI()
+    {
+        Is_ViewUI = true;
+        Camera_Action.Get_Inctance().Set_NotCameraMoving();
+    }
+    public void Set_NotViewUI()
+    {
+        Is_ViewUI = false;
+        Camera_Action.Get_Inctance().Set_CameraMoving();
     }
 }

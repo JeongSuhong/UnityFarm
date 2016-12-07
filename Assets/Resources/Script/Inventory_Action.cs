@@ -1,14 +1,14 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class StoreManager : MonoBehaviour {
+public class Inventory_Action : MonoBehaviour {
 
 
-    public void View_StoreUI()
+    public void View_InventoryUI()
     {
         GetComponent<UIPanel>().alpha = 1;
     }
-    public void NotView_StroeUI()
+    public void NotView_InventoryUI()
     {
         GetComponent<UIPanel>().alpha = 0;
     }

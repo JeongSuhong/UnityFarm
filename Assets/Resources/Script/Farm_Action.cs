@@ -4,6 +4,7 @@ using System.Collections;
 public class Farm_Action : MonoBehaviour
 {
     public CropInfo Planted_Crop;
+    public GameObject RotObj;
     public FARM_STATE State = FARM_STATE.NONE;
 
     public float GrowTime = 0;
@@ -21,6 +22,10 @@ public class Farm_Action : MonoBehaviour
         else if (State == FARM_STATE.MATURE)
         {
             Harvest_Crop();
+        }
+        else if (State == FARM_STATE.ROT)
+        {
+            Cleaning_Farm();
         }
     }
 
@@ -40,12 +45,20 @@ public class Farm_Action : MonoBehaviour
 
         transform.GetChild(0).FindChild(Planted_Crop.Name).gameObject.SetActive(true);
     }
-    public void Harvest_Crop()
+    void Harvest_Crop()
     {
         State = FARM_STATE.ROT;
 
         transform.GetChild(0).FindChild(Planted_Crop.Name).gameObject.SetActive(false);
+
+        RotObj.SetActive(true);
     }
+    void Cleaning_Farm()
+    {
+        State = FARM_STATE.NONE;
+        RotObj.SetActive(false);
+    }
+
 
 
     IEnumerator C_Grow_Time()
