@@ -65,7 +65,7 @@ public class CropsManager : MonoBehaviour
         GameObject obj = Instantiate(Select_Crop_UI_Prefab, Grid_Select_Crops.transform) as GameObject;
         obj.transform.localScale = Vector3.one;
         obj.name = info.Name;
-        obj.GetComponent<Crops_UI_Action>().Set_Crop_info(info);
+        obj.GetComponent<Select_CropsButton_Action>().Set_Crop_info(info);
 
         Grid_Select_Crops.repositionNow = true;
     }

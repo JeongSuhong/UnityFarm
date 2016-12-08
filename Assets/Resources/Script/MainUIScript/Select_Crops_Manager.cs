@@ -1,24 +1,24 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Select_Crops_Action : MonoBehaviour {
+public class Select_Crops_Manager : MonoBehaviour {
 
     public int Select_Crop_ID = 0;
     public GameObject Select_Farm_UI;
 
-    private static Select_Crops_Action instance = null;
+    private static Select_Crops_Manager instance = null;
 
-    public static Select_Crops_Action Get_Inctance()
+    public static Select_Crops_Manager Get_Inctance()
     {
         if (instance == null)
         {
-            instance = FindObjectOfType(typeof(Select_Crops_Action)) as Select_Crops_Action;
+            instance = FindObjectOfType(typeof(Select_Crops_Manager)) as Select_Crops_Manager;
         }
 
         if (null == instance)
         {
-            GameObject obj = new GameObject("Select_Crops_Action ");
-            instance = obj.AddComponent(typeof(Select_Crops_Action)) as Select_Crops_Action;
+            GameObject obj = new GameObject("Select_Crops_Manager ");
+            instance = obj.AddComponent(typeof(Select_Crops_Manager)) as Select_Crops_Manager;
 
             Debug.Log("Fail to get Select_Crops_Action Instance");
         }

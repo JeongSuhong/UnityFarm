@@ -23,7 +23,7 @@ public class Select_Farm_Action : MonoBehaviour {
         Select_Crop.gameObject.SetActive(false);
         GetComponent<UIPanel>().alpha = 0;
 
-        Select_Crops_Action.Get_Inctance().Set_SelectCrop_Nothing();
+        Select_Crops_Manager.Get_Inctance().Set_SelectCrop_Nothing();
         GameManager.Get_Inctance().Set_BasicSetting();
 
         NotView_SelectCrops_UI();

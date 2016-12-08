@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Inventory_Action : MonoBehaviour {
+public class Inventory_UI_Action : MonoBehaviour {
 
 
     public void View_InventoryUI()

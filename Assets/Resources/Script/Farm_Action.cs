@@ -5,6 +5,7 @@ public class Farm_Action : MonoBehaviour
 {
     public CropInfo Planted_Crop;
     public GameObject RotObj;
+    public GameObject SeedObj;
     public FARM_STATE State = FARM_STATE.NONE;
 
     public float GrowTime = 0;
@@ -13,7 +14,7 @@ public class Farm_Action : MonoBehaviour
     {
         if (State == FARM_STATE.NONE)
         {
-            Select_Crops_Action.Get_Inctance().View_SelectCrops_UI();
+            Select_Crops_Manager.Get_Inctance().View_SelectCrops_UI();
         }
         else if (State == FARM_STATE.GROWING)
         {
@@ -33,25 +34,32 @@ public class Farm_Action : MonoBehaviour
     {
         if(State != FARM_STATE.NONE) { return; }
 
-        int Crop_ID = Select_Crops_Action.Get_Inctance().Select_Crop_ID;
+        int Crop_ID = Select_Crops_Manager.Get_Inctance().Select_Crop_ID;
 
         if(Crop_ID == 0) { return; }
 
         State = FARM_STATE.GROWING;
 
+        SeedObj.SetActive(true);
+
         Planted_Crop = CropsManager.Get_Inctance().Get_CropInfo(Crop_ID);
         GrowTime = Planted_Crop.Grow_Time;
+
+        UserManager.Get_Inctance().Increase_Gold(-Planted_Crop.Price);
+
         StartCoroutine(C_Grow_Time());
 
-        transform.GetChild(0).FindChild(Planted_Crop.Name).gameObject.SetActive(true);
     }
     void Harvest_Crop()
     {
         State = FARM_STATE.ROT;
 
         transform.GetChild(0).FindChild(Planted_Crop.Name).gameObject.SetActive(false);
-
         RotObj.SetActive(true);
+
+        UserManager.Get_Inctance().Obtain_Crop(Planted_Crop.ID, 1);
+
+        Planted_Crop = null;
     }
     void Cleaning_Farm()
     {
@@ -71,6 +79,8 @@ public class Farm_Action : MonoBehaviour
         }
 
         State = FARM_STATE.MATURE;
+        SeedObj.SetActive(false);
+        transform.GetChild(0).FindChild(Planted_Crop.Name).gameObject.SetActive(true);
 
         yield break;
     }

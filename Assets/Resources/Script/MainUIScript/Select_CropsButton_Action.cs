@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Crops_UI_Action : Base_Button_Action
+public class Select_CropsButton_Action : Base_Button_Action
 {
     int Crop_ID;
 
@@ -28,7 +28,7 @@ public class Crops_UI_Action : Base_Button_Action
 
     public void Select_Crop()
     {
-        Select_Crops_Action.Get_Inctance().Select_Crop(Crop_ID);
+        Select_Crops_Manager.Get_Inctance().Select_Crop(Crop_ID);
     }
 
 }
