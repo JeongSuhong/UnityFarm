@@ -48,12 +48,8 @@ public class GameManager : MonoBehaviour
                     GameObject obj = hit.collider.gameObject;
 
                     if (obj.CompareTag("EventOBJ"))
-                    {
-                        Debug.Log("Click EventOBJ!");
-                    }
-                    else if (obj.CompareTag("Farm"))
-                    {
-                        obj.GetComponent<Farm_Action>().Check_Action_Farm();
+                    { 
+                        obj.GetComponent<EventOBJ_Action>().Start_Action();
                     }
                 }
 
@@ -88,7 +84,7 @@ public class GameManager : MonoBehaviour
 
                     GameObject obj = hit.collider.gameObject;
 
-                    if (obj.CompareTag("Farm"))
+                    if (obj.name.Contains("Farm"))
                     {
                         obj.GetComponent<Farm_Action>().Plant_Crop();
                     }
@@ -100,9 +96,57 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public void Install_Item(GameObject obj)
+    {
+        StopAllCoroutines();
+        StartCoroutine(C_Install_Item(obj));
+    }
+    IEnumerator C_Install_Item(GameObject obj)
+    {
+        while (true)
+        {
+            if (Input.GetMouseButtonDown(0))
+            {
+                // 카메라에서 화면상의 마우스 좌표에 해당하는 공간으로 레이를 쏜다.
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                RaycastHit hit;
+                // Physics.Raycast(쏜 레이 정보, 충돌 정보, 거리)
+                //  => 충돌이 되면 true를 리턴하면서 충돌 정보를 확인 할 수 있다.
+                if (Physics.Raycast(ray, out hit, Mathf.Infinity))
+                {
+                    if (hit.collider.gameObject == obj)
+                    {
+                        Set_ViewUI();
+
+                        while (Input.GetMouseButton(0))
+                        {
+                            Ray ray1 = Camera.main.ScreenPointToRay(Input.mousePosition);
+                            RaycastHit hit1;
+
+                            if (Physics.Raycast(ray1, out hit1, Mathf.Infinity))
+                            {
+                                Vector3 pos = hit1.collider.transform.position;
+                                pos.y = 0.06f;
+                                obj.transform.position = pos;
+                            }
+
+                            yield return null;
+                        }
+                    }
+                    else
+                    {
+                        Set_NotViewUI();
+                    }
+                }
+            }
+            yield return null;
+        }
+    }
+
     public void Set_BasicSetting()
     {
         StopAllCoroutines();
+        Is_ViewUI = false;
         StartCoroutine("C_Update");
 
         Camera_Action.Get_Inctance().Set_CameraMoving();

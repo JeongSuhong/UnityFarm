@@ -34,19 +34,29 @@ public class CropWarehouse_UI_Action : Base_Button_Action {
     {
         int Crop_Count = UserManager.Get_Inctance().Get_Crop_Count(CropID);
 
-        if (Crop_Count == -99) { return; }
-
         Transform ChildObj =  Table_Crops.transform.FindChild(CropID.ToString());
 
         if (ChildObj != null)
         {
-            if (Crop_Count > 99)
+            // Crop이 인벤에 없는데 창고에 남아있다면 .( 작물을 판매 )
+            if (Crop_Count == -99)
+            {
+                ChildObj.gameObject.SetActive(false);
+                Table_Crops.repositionNow = true;
+            }
+            else
             {
 
+                ChildObj.gameObject.SetActive(true);
+
+                if (Crop_Count > 99)
+                {
+
+                }
+
+                ChildObj.GetComponent<CropWarehouse_Crop_UI_Action>().Set_Crop_Info(CropID, Crop_Count);
             }
-
-            ChildObj.GetComponent<CropWarehouse_Crop_UI_Action>().Set_Crop_Info(CropID, Crop_Count);
-
+            
             return;
 
         }
@@ -76,7 +86,7 @@ public class CropWarehouse_UI_Action : Base_Button_Action {
 
         if (y <= -500f)
         {
-            while (y <= 490f)
+            while (y <= 450f)
             {
                 transform.position += Vector3.up * Time.deltaTime * 4f;
                 y = transform.localPosition.y;

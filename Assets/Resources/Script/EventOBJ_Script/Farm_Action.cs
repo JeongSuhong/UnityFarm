@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Farm_Action : MonoBehaviour
+public class Farm_Action : EventOBJ_Action
 {
     public CropInfo Planted_Crop;
     public GameObject RotObj;
@@ -10,6 +10,10 @@ public class Farm_Action : MonoBehaviour
 
     public float GrowTime = 0;
 
+    public override void Start_Action()
+    {
+        Check_Action_Farm();
+    }
     public void Check_Action_Farm()
     {
         if (State == FARM_STATE.NONE)
@@ -58,6 +62,8 @@ public class Farm_Action : MonoBehaviour
         RotObj.SetActive(true);
 
         UserManager.Get_Inctance().Obtain_Crop(Planted_Crop.ID, 1);
+
+        UIManager.Get_Inctance().Set_Drop_Item_Icon(gameObject, Planted_Crop.SpriteName);
 
         Planted_Crop = null;
     }

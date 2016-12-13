@@ -5,6 +5,7 @@ using System.Collections.Generic;
 public class UserManager : MonoBehaviour {
 
     private Dictionary<int, int> CropInven = new Dictionary<int, int>();
+    private Dictionary<int, int> ItemInven = new Dictionary<int, int>();
 
     private int Gold = 1000;
     public UILabel Label_Gold;
@@ -73,6 +74,26 @@ public class UserManager : MonoBehaviour {
         {
             return false;
         }
+    }
+
+    public void Sell_Crop(int count, int crop_id)
+    {
+        if(count <= 0 ) { return; }
+
+        int sell_value = CropsManager.Get_Inctance().Get_CropInfo(crop_id).Selling_Price * count;
+
+        CropInven[crop_id] -= count;
+
+        if (CropInven[crop_id] <= 0)
+        {
+            CropInven.Remove(crop_id);
+        }
+
+        CropWarehouse_UI_Action.Get_Inctance().Set_Crop_UI(crop_id);
+
+        Gold += sell_value;
+        Label_Gold.text = Gold.ToString();
+        
     }
 
     public void Increase_Gold(int value)
