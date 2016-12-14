@@ -44,7 +44,19 @@ public class StoreManager : MonoBehaviour {
 
         Items.Add(test);
 
-        for(int i = 0; i < Items.Count; i++)
+        Item test2 = new Item();
+        test2.ID = 2;
+        test2.type = ITEM_TYPE.BUILDING;
+        test2.Name = "집";
+        test2.Sprite_Name = "House_1";
+        test2.Model_Name = "House_1";
+        test2.Price = 100;
+        test2.Buff_Happy = 0;
+        test2.Buff_Speed = 0;
+
+        Items.Add(test2);
+
+        for (int i = 0; i < Items.Count; i++)
         {
             Create_Store_Item_UI(Items[i]);
         }

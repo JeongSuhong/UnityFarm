@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Item_UI_Action : MonoBehaviour {
+public class Item_Install_UI_Action : MonoBehaviour {
     
     enum BUTTON_TYPE
     {
@@ -18,21 +18,21 @@ public class Item_UI_Action : MonoBehaviour {
 
     GameObject Select_OBJ = null;
     int ID;
-    private static Item_UI_Action instance = null;
+    private static Item_Install_UI_Action instance = null;
 
-    public static Item_UI_Action Get_Inctance()
+    public static Item_Install_UI_Action Get_Inctance()
     {
         if (instance == null)
         {
-            instance = FindObjectOfType(typeof(Item_UI_Action)) as Item_UI_Action;
+            instance = FindObjectOfType(typeof(Item_Install_UI_Action)) as Item_Install_UI_Action;
         }
 
         if (null == instance)
         {
-            GameObject obj = new GameObject("Item_UI_Action ");
-            instance = obj.AddComponent(typeof(Item_UI_Action)) as Item_UI_Action;
+            GameObject obj = new GameObject("Item_Install_UI_Action ");
+            instance = obj.AddComponent(typeof(Item_Install_UI_Action)) as Item_Install_UI_Action;
 
-            Debug.Log("Fail to get Item_UI_Action Instance");
+            Debug.Log("Fail to get Item_Install_UI_Action Instance");
         }
         return instance;
     }
@@ -124,7 +124,9 @@ public class Item_UI_Action : MonoBehaviour {
     {
         GameObject obj = Instantiate(Select_OBJ, Select_OBJ.transform.position, Select_OBJ.transform.rotation) as GameObject;
         obj.name = Select_OBJ.name;
+        Destroy( obj.GetComponent<Rigidbody>() );
         obj.GetComponent<EventOBJ_Action>().Is_SaveItem = true;
+        obj.GetComponent<EventOBJ_Action>().Install_Action();
  
         UserManager.Get_Inctance().Increase_Gold(-100);
 

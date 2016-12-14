@@ -10,6 +10,10 @@ public class EventOBJ_Action : MonoBehaviour {
     {
 
     }
+    public virtual void Install_Action()
+    {
+
+    }
 
     void OnEnable()
     {
