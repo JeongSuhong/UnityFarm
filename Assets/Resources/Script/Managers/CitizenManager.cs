@@ -5,7 +5,7 @@ using System.Collections.Generic;
 public class CitizenManager : MonoBehaviour {
 
     public GameObject Citizen_Prefab;
-    public List<GameObject> Citizens = new List<GameObject>();
+    public List<Citizen_Action> Citizens = new List<Citizen_Action>();
 
     private static CitizenManager instance = null;
 
@@ -34,9 +34,9 @@ public class CitizenManager : MonoBehaviour {
 
     void Start()
     {
-        for(int i = 0; i < gameObject.transform.childCount; i++)
+        for (int i = 0; i < gameObject.transform.childCount; i++)
         {
-            Citizens.Add(gameObject.transform.GetChild(i).gameObject);
+            Citizens.Add(gameObject.transform.GetChild(i).gameObject.GetComponent<Citizen_Action>());
         }
     }
 
@@ -44,22 +44,15 @@ public class CitizenManager : MonoBehaviour {
     {
         GameObject Citizen = Instantiate(Citizen_Prefab, this.gameObject.transform) as GameObject;
         Citizen.GetComponent<Citizen_Action>().Set_House(house);
-
-        GameObject Citizen_Model = Citizen.transform.FindChild("Model").gameObject;
-
-        int R = Random.Range(0, Citizen_Model.transform.childCount);
-
-        Citizen_Model.transform.GetChild(R).gameObject.SetActive(true);
-
         Citizen.transform.localPosition = house.gameObject.transform.position + new Vector3(0f, 0f, -1.2f);
         Citizen.GetComponent<Citizen_Action>().Set_Active();
 
     }
-    public GameObject Check_Set_House(GameObject house)
+    public Citizen_Action Check_Set_House(GameObject house)
     {
-        for(int i = 0; i < Citizens.Count; i++)
+        for (int i = 0; i < Citizens.Count; i++)
         {
-            if(Citizens[i].GetComponent<Citizen_Action>().Select_House == house)
+            if (Citizens[i].Select_House == house)
             {
                 return Citizens[i];
             }
@@ -68,4 +61,13 @@ public class CitizenManager : MonoBehaviour {
         return null;
     }
 
+    public bool Check_Talk(Citizen_Action target)
+    {
+        if (target.State == CITIZEN_STATE.WALK && target.Loneliness > 50f)
+        {
+            return true;
+        }
+
+        return false;
+    }
 }

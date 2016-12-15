@@ -48,8 +48,8 @@ public class StoreManager : MonoBehaviour {
         test2.ID = 2;
         test2.type = ITEM_TYPE.BUILDING;
         test2.Name = "집";
-        test2.Sprite_Name = "House_1";
-        test2.Model_Name = "House_1";
+        test2.Sprite_Name = "House";
+        test2.Model_Name = "House";
         test2.Price = 100;
         test2.Buff_Happy = 0;
         test2.Buff_Speed = 0;
