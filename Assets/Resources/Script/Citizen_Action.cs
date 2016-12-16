@@ -10,6 +10,12 @@ public class Citizen_Action : Citizen_Variable {
         int R = Random.Range(0, Citizen_Model.transform.childCount);
         Citizen_Model.transform.GetChild(R).gameObject.SetActive(true);
 
+        Transform effects = transform.FindChild("Effect");
+        Effects = new ParticleSystem[effects.childCount];
+        for(int i = 0; i < effects.childCount; i++)
+        {
+            Effects[i] = effects.GetChild(i).GetComponent<ParticleSystem>();
+        }
         Ani = Citizen_Model.transform.GetChild(R).gameObject.GetComponent<Animation>();
 
 
@@ -149,15 +155,16 @@ public class Citizen_Action : Citizen_Variable {
         }
 
         transform.GetChild(0).gameObject.SetActive(false);
-        Select_House.GetComponent<House_Action>().Set_Sleep_Effect(true);
+        House_Sleep_Gauge_Action Gauge =  Select_House.GetComponent<House_Action>().Set_Sleep_UI(true);
 
         while(Tiredness > 0)
         {
             Increase_Tiredness(-Time.deltaTime * 5f);
+            Gauge.Set_Gauge(Max_Tiredness, Tiredness, Select_House.transform.position);
             yield return null;
         }
 
-        Select_House.GetComponent<House_Action>().Set_Sleep_Effect(false);
+        Select_House.GetComponent<House_Action>().Set_Sleep_UI(false);
         transform.GetChild(0).gameObject.SetActive(true);
         State = CITIZEN_STATE.NONE;
 
@@ -166,6 +173,12 @@ public class Citizen_Action : Citizen_Variable {
     }
     private IEnumerator C_Farmming()
     {
+        if(Event_OBJ.GetComponent<Farm_Action>().State != Farm_Action.FARM_STATE.NONE)
+        {
+            State = CITIZEN_STATE.NONE;
+            yield break;
+        }
+
         Set_Ani(CITIZEN_ANI.WALK);
 
         float distance = Mathf.Abs(Vector3.Distance(gameObject.transform.localPosition, Event_OBJ.transform.position));
@@ -185,8 +198,13 @@ public class Citizen_Action : Citizen_Variable {
 
         yield return new WaitForSeconds(3f);
 
+        Set_Effect(CITIZEN_EFFECT.GET_ITEM);
+
         UserManager.Get_Inctance().Obtain_Crop(0, 1);
-        UIManager.Get_Inctance().Set_Drop_Item_Icon(gameObject, "leaf");
+        // test Leaf
+        UIManager.Get_Inctance().Set_Get_Item_Icon(gameObject, "leaf", 1, ITEM_UI_TYPE.CROP);
+
+        Increase_Tiredness(-10);
         State = CITIZEN_STATE.NONE;
         yield break;
     }
@@ -203,6 +221,7 @@ public class Citizen_Action : Citizen_Variable {
                 }
         }
     }
+
 
     void Increase_Loneliness(float value)
     {
@@ -222,6 +241,10 @@ public class Citizen_Action : Citizen_Variable {
     void Set_Ani(CITIZEN_ANI ani)
     {
         Ani.Play(Ani_Names[(int)ani], PlayMode.StopAll);
+    }
+    void Set_Effect(CITIZEN_EFFECT effect)
+    {
+        Effects[(int)effect].Play();
     }
 
     void OnTriggerEnter(Collider col)

@@ -4,6 +4,8 @@ using System.Collections.Generic;
 
 public class Citizen_Variable : MonoBehaviour {
 
+    public ParticleSystem[] Effects;
+
     public GameObject Select_House;
     public GameObject Event_OBJ;
 
@@ -18,7 +20,6 @@ public class Citizen_Variable : MonoBehaviour {
     public float Loneliness = 0f;
     protected const float Max_Tiredness = 100f;
     public float Tiredness = 0f;
-
 
     protected CITIZEN_ANI Ani_State = CITIZEN_ANI.IDEL;
     protected  string[] Ani_Names = new string[] { "idle", "walk", "run", "tumbling", "sit", "sit_idle", "stand", "talk", "farmming" };
@@ -44,4 +45,7 @@ public enum CITIZEN_ANI
     TALK,
     FARMMING,
 }
-
+public enum CITIZEN_EFFECT
+{
+    GET_ITEM = 0,
+}

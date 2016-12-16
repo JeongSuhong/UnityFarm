@@ -43,20 +43,23 @@ public class CropsManager : MonoBehaviour
 
         CropsInfo.Add(testInfo.ID, testInfo);
 
-        testInfo.ID = 0;
-        testInfo.Is_Farmming = false;
-        testInfo.Name = "나뭇잎";
-        testInfo.SpriteName = "leaf";
-        testInfo.Grow_Time = 0;
-        testInfo.Selling_Price = 1;
-        testInfo.Price = 0;
+        CropInfo testInfo1 = new CropInfo();
+        testInfo1.ID = 0;
+        testInfo1.Is_Farmming = false;
+        testInfo1.Name = "나뭇잎";
+        testInfo1.SpriteName = "leaf";
+        testInfo1.Grow_Time = 0;
+        testInfo1.Selling_Price = 1;
+        testInfo1.Price = 0;
 
-        CropsInfo.Add(testInfo.ID, testInfo);
+        CropsInfo.Add(testInfo1.ID, testInfo1);
 
         foreach (KeyValuePair<int, CropInfo> crop in CropsInfo)
         {
+
             if (crop.Value.Is_Farmming)
-            {
+            { 
+
                 Set_SelectCropUI(crop.Value);
             }
         }

@@ -32,6 +32,13 @@ public class Store_Item_Action : MonoBehaviour {
         if (EventOBJ == null)
         {
             GameObject EventOBJ_Prefab = Resources.Load("Prefabs/EventOBJ/" + Item_Info.Model_Name) as GameObject;
+
+            if(EventOBJ_Prefab == null)
+            {
+                Debug.Log("Prefab Error!!!");
+                return;
+            }
+
             EventOBJ = Instantiate(EventOBJ_Prefab, Vector3.one, Quaternion.identity) as GameObject;
             EventOBJ.name = Item_Info.Model_Name;
             EventOBJ.AddComponent<Rigidbody>().useGravity = false;

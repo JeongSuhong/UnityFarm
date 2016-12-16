@@ -4,14 +4,17 @@ using System.Collections;
 public class Farm_Action : EventOBJ_Action
 {
     public CropInfo Planted_Crop;
+    public GameObject CropModelObj;
     public GameObject RotObj;
     public GameObject SeedObj;
+    public GameObject Harvest_Effect;
     public FARM_STATE State = FARM_STATE.NONE;
 
     public float GrowTime = 0;
 
     public override void Start_Action()
     {
+        Harvest_Effect.SetActive(false);
         Check_Action_Farm();
     }
     public void Check_Action_Farm()
@@ -58,8 +61,10 @@ public class Farm_Action : EventOBJ_Action
     {
         State = FARM_STATE.ROT;
 
-        transform.GetChild(0).FindChild(Planted_Crop.Name).gameObject.SetActive(false);
+        CropModelObj.SetActive(false);
+        CropModelObj.transform.FindChild(Planted_Crop.Name).gameObject.SetActive(false);
         RotObj.SetActive(true);
+        Harvest_Effect.SetActive(true);
 
         UserManager.Get_Inctance().Obtain_Crop(Planted_Crop.ID, 1);
 
@@ -86,7 +91,8 @@ public class Farm_Action : EventOBJ_Action
 
         State = FARM_STATE.MATURE;
         SeedObj.SetActive(false);
-        transform.GetChild(0).FindChild(Planted_Crop.Name).gameObject.SetActive(true);
+        CropModelObj.SetActive(true);
+        CropModelObj.transform.FindChild(Planted_Crop.Name).gameObject.SetActive(true);
 
         yield break;
     }
