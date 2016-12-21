@@ -9,6 +9,11 @@ public class House_Action : EventOBJ_Action {
     GameObject Sleep_Gauge;
     List<GameObject> Drop_Item_Icons = new List<GameObject>();
 
+    public override void Start_Action()
+    {
+        Class_Citizen citizen = CitizenManager.Get_Inctance().Check_Set_House(gameObject).Info;
+        Citizen_Infomation_UI_Action.Get_Inctance().View_Window(citizen);
+    }
     public override void Install_Action()
     {
         Citizen_Action Citizen = CitizenManager.Get_Inctance().Check_Set_House(gameObject);

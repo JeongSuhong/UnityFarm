@@ -43,7 +43,7 @@ public class Citizen_Action : Citizen_Variable {
             }
             else
             {
-                if (Tiredness == Max_Tiredness)
+                if (Info.Tiredness == Info.Max_Tiredness)
                 {
                     State = CITIZEN_STATE.RESTING;
                 }
@@ -157,10 +157,10 @@ public class Citizen_Action : Citizen_Variable {
         transform.GetChild(0).gameObject.SetActive(false);
         House_Sleep_Gauge_Action Gauge =  Select_House.GetComponent<House_Action>().Set_Sleep_UI(true);
 
-        while(Tiredness > 0)
+        while(Info.Tiredness > 0)
         {
             Increase_Tiredness(-Time.deltaTime * 5f);
-            Gauge.Set_Gauge(Max_Tiredness, Tiredness, Select_House.transform.position);
+            Gauge.Set_Gauge(Info.Max_Tiredness, Info.Tiredness, Select_House.transform.position);
             yield return null;
         }
 
@@ -232,10 +232,10 @@ public class Citizen_Action : Citizen_Variable {
     }
     void Increase_Tiredness(float value)
     {
-        Tiredness += value;
+        Info.Tiredness += value;
 
-        if (Tiredness <= 0) { Tiredness = 0; }
-        if (Tiredness >= Max_Tiredness) { Tiredness = Max_Tiredness; }
+        if (Info.Tiredness <= 0) { Info.Tiredness = 0; }
+        if (Info.Tiredness >= Info.Max_Tiredness) { Info.Tiredness = Info.Max_Tiredness; }
     }
 
     void Set_Ani(CITIZEN_ANI ani)
@@ -263,6 +263,8 @@ public class Citizen_Action : Citizen_Variable {
         }
         else if (col.gameObject.CompareTag("EventOBJ"))
         {
+            if(col.GetComponent<EventOBJ_Action>().Is_Install != true) { return; }
+
             Event_OBJ = col.gameObject;
             Check_Event(col.gameObject.name);
         }

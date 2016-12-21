@@ -42,10 +42,13 @@ public class CitizenManager : MonoBehaviour {
 
     public void Create_Citizen(GameObject house)
     {
-        GameObject Citizen = Instantiate(Citizen_Prefab, this.gameObject.transform) as GameObject;
-        Citizen.GetComponent<Citizen_Action>().Set_House(house);
-        Citizen.transform.localPosition = house.gameObject.transform.position + new Vector3(0f, 0f, -1.2f);
-        Citizen.GetComponent<Citizen_Action>().Set_Active();
+        GameObject citizen = Instantiate(Citizen_Prefab, this.gameObject.transform) as GameObject;
+        Citizen_Action citizen_action = citizen.GetComponent<Citizen_Action>();
+        citizen_action.Set_House(house);
+        citizen.transform.localPosition = house.gameObject.transform.position + new Vector3(0f, 0f, -1.2f);
+        citizen_action.Set_Active();
+
+        Citizens.Add(citizen_action);
 
     }
     public Citizen_Action Check_Set_House(GameObject house)
@@ -70,4 +73,20 @@ public class CitizenManager : MonoBehaviour {
 
         return false;
     }
+}
+
+public class Class_Citizen
+{
+    public CITIZEN_TYPE Type = CITIZEN_TYPE.CHEF;
+    public string Type_Explanation = "Type 설명문입니다. ";
+    public string Name = "Test Name";
+    public int Level = 1;
+    public float Exp = 0;
+    public float Max_HP = 100;
+    public float HP = 100;
+    public float Max_Tiredness = 100;
+    public float Tiredness = 0;
+    public int Charm= 1;
+
+
 }

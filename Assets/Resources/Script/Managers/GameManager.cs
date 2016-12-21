@@ -3,6 +3,8 @@ using System.Collections;
 
 public class GameManager : MonoBehaviour
 {
+    private int User_Index;
+
     public bool Is_ViewUI = false;
     private static GameManager instance = null;
 
@@ -26,7 +28,7 @@ public class GameManager : MonoBehaviour
     void Awake()
     {
         instance = this;
-        StartCoroutine("C_Update");
+        DontDestroyOnLoad(this);
     }
 
     // Update is called once per frame
@@ -182,5 +184,19 @@ public class GameManager : MonoBehaviour
     {
         Is_ViewUI = false;
         Camera_Action.Get_Inctance().Set_CameraMoving();
+    }
+
+    public void Set_Message(string text)
+    {
+
+    }
+
+    public void Set_UserIndex(int value)
+    {
+        User_Index = value;
+    }
+    public int Get_UserIndex()
+    {
+        return User_Index;
     }
 }

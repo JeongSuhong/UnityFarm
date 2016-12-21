@@ -6,12 +6,18 @@ public class UIManager : MonoBehaviour {
 
     public GameObject UIRoot;
 
+    public UILabel Label_Level;
+    public UISlider Slider_Exp;
+    public UILabel Label_Gold;  
+    public UILabel Label_Jam;
+    public UILabel Label_House;
+
     public UIAtlas[] Item_UI_Atlas;
     
     public GameObject GrowCrop_Tooltip;
     public UIPanel Item_UI;
-    
-    
+
+    public GameObject MinusGold_UI;
 
     public Transform CropWarehouse_UI_Position;
     public GameObject Drop_Item_Icon_Prefab;
@@ -19,6 +25,8 @@ public class UIManager : MonoBehaviour {
 
     public GameObject Get_Item_Mini_Icon_Prefab;
     List<GameObject> Get_Item_Mini_Icons = new List<GameObject>();
+
+
 
     private static UIManager instance = null;
 
@@ -39,11 +47,12 @@ public class UIManager : MonoBehaviour {
         return instance;
     }
 
+
+
     void Awake()
     {
         instance = this;
     }
-
 
     public void View_GrowCrop_Tooltip(CropInfo info, Farm_Action farm)
     {
@@ -101,8 +110,6 @@ public class UIManager : MonoBehaviour {
         Drop_Item_Icons.Add(obj);
     }
 
-    // 작물 얻었을때나 아이템 획득했을때 아이콘 만드는 함수.
-    // 아이콘이 처음 위치해야할 OBJ 랑 SpriteName을 매개변수로 받는다.
     public void Set_Get_Item_Icon(GameObject callOBJ, string sprite_name, int count, ITEM_UI_TYPE type)
     {
         // 비활성화하고 있는 Icon을 담는 변수.
@@ -145,7 +152,6 @@ public class UIManager : MonoBehaviour {
         // ICon이 마지막으로 도착해야할 OBJ Position과 Sprite_name을 매개변수로 넘긴다.
         Icon.GetComponent<Get_Item_MiniUI_Action>().Set_Awake(sprite_name, count, Item_UI_Atlas[(int)type]);
     }
-    // Drop_Item_Icon을 만드는 함수. 
     void Create_Get_Item_Icon()
     {
         GameObject obj = Instantiate(Get_Item_Mini_Icon_Prefab, UIRoot.transform) as GameObject;
@@ -153,6 +159,12 @@ public class UIManager : MonoBehaviour {
         Get_Item_Mini_Icons.Add(obj);
     }
 
+    public void Set_MinusGold_UI(int gold)
+    {
+        MinusGold_UI.transform.localPosition = MinusGold_UI.GetComponent<TweenPosition>().from;
+        MinusGold_UI.SetActive(true);
+        MinusGold_UI.GetComponent<MinusGold_UI_Action>().Set_UI(gold);
+    }
 }
 public enum ITEM_UI_TYPE
 {

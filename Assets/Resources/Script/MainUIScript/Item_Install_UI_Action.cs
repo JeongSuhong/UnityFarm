@@ -76,7 +76,7 @@ public class Item_Install_UI_Action : MonoBehaviour {
 
             Set_Base_Button_UI();
 
-        if(state.Is_Install == false)
+        if(state.Check_Is_Install == false)
         {
             Set_NotInstall_UI();
         }
@@ -125,7 +125,11 @@ public class Item_Install_UI_Action : MonoBehaviour {
         GameObject obj = Instantiate(Select_OBJ, Select_OBJ.transform.position, Select_OBJ.transform.rotation) as GameObject;
         obj.name = Select_OBJ.name;
         Destroy( obj.GetComponent<Rigidbody>() );
-        obj.GetComponent<EventOBJ_Action>().Is_SaveItem = true;
+        EventOBJ_Action obj_action = obj.GetComponent<EventOBJ_Action>();
+
+        obj_action.Is_SaveItem = true;
+        obj_action.Is_Install = true;
+
         obj.GetComponent<EventOBJ_Action>().Install_Action();
  
         UserManager.Get_Inctance().Increase_Gold(-100);
