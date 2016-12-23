@@ -58,7 +58,7 @@ public class Store_Item_Action : MonoBehaviour {
         }
 
         StoreManager.Get_Inctance().NotView_StroeUI();
-        Item_Install_UI_Action.Get_Inctance().View_Item_InstallUI(EventOBJ, Item_Info.ID);
+        Item_Install_UI_Action.Get_Inctance().View_Item_InstallUI(EventOBJ, Item_Info);
         GameManager.Get_Inctance().Install_Item(EventOBJ);
     }
 }

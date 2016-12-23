@@ -1,7 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class EventOBJ_Action : MonoBehaviour {
+public class BulidingOBJ_Action : MonoBehaviour {
+
+    public Item Info;
 
     public bool Check_Is_Install = true;
     public bool Is_Install = false;

@@ -2,7 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class House_Action : EventOBJ_Action {
+public class House_Action : BulidingOBJ_Action
+{
 
     public GameObject Sleep_Effect;
 
@@ -11,7 +12,14 @@ public class House_Action : EventOBJ_Action {
 
     public override void Start_Action()
     {
+        if (CitizenManager.Get_Inctance().Check_Set_House(gameObject) == null)
+        {
+            Debug.Log("citizen Error!!! ");
+            return;
+        }
+
         Class_Citizen citizen = CitizenManager.Get_Inctance().Check_Set_House(gameObject).Info;
+
         Citizen_Infomation_UI_Action.Get_Inctance().View_Window(citizen);
     }
     public override void Install_Action()

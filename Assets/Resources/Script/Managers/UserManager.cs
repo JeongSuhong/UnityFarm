@@ -7,7 +7,6 @@ public class UserManager : MonoBehaviour {
 
     private Dictionary<int, int> CropInven = new Dictionary<int, int>();
     private Dictionary<int, int> ItemInven = new Dictionary<int, int>();
-    public Dictionary<Item, Vector3> Building_Inven = new Dictionary<Item, Vector3>();
 
     private int Level;
     private float Exp;
@@ -37,7 +36,11 @@ public class UserManager : MonoBehaviour {
     void Awake()
     {
         instance = this;
-        Get_UserData();
+
+        GameManager.Get_Inctance().Start_Update();
+
+        Get_DB_UserData();
+        Get_DB_Install_Buliding();
     }
 
     public void Obtain_Crop(int CropID, int count)
@@ -98,11 +101,6 @@ public class UserManager : MonoBehaviour {
 
     }
 
-    public void Obtain_Building(Item building , Vector3 pos)
-    {
-        Building_Inven.Add(building, pos);
-    }
-
     public void Increase_Gold(int value)
     {
         Gold += value;
@@ -145,9 +143,14 @@ public class UserManager : MonoBehaviour {
     }
 
 
+
+
+   private BulidingOBJ_Action Get_Buliding_Action;
+
+
     /////// Network //////
 
-    public void Get_UserData()
+    void Get_DB_UserData()
     {
         int index = GameManager.Get_Inctance().Get_UserIndex();
        
@@ -156,9 +159,9 @@ public class UserManager : MonoBehaviour {
 
         sendData.Add("user_index", index);
 
-        StartCoroutine(NetworkManager.Instance.ProcessNetwork(sendData, Reply_Get_UserData));
+        StartCoroutine(NetworkManager.Instance.ProcessNetwork(sendData, Reply_Get_DB_UserData));
     }
-    void Reply_Get_UserData(string json)
+    void Reply_Get_DB_UserData(string json)
     {
         // JSON Data 변환
         RecvUserData data = JsonReader.Deserialize<RecvUserData>(json);
@@ -176,13 +179,78 @@ public class UserManager : MonoBehaviour {
         UIManager.Get_Inctance().Label_House.text = " 0 / " + Max_House.ToString();
     }
 
+    public void Set_DB_Install_Buliding(BulidingOBJ_Action buliding_action, GameObject obj)
+    {
+        int index = GameManager.Get_Inctance().Get_UserIndex();
+        Get_Buliding_Action = buliding_action;
 
-}
-public class RecvUserData
-{
-    public int Level;
-    public float Exp;
-    public int Gold;
-    public int Jam;
-    public int Max_House;
+
+        Dictionary<string, object> sendData = new Dictionary<string, object>();
+        sendData.Add("contents", "Set_InstallOBJ");
+
+        sendData.Add("user_id", index);
+        sendData.Add("buliding_id", buliding_action.Info.Buliding_ID);
+        sendData.Add("pos_x", obj.transform.position.x);
+        sendData.Add("pos_y", obj.transform.position.y);
+        sendData.Add("pos_z", obj.transform.position.z);
+        sendData.Add("rot_x", obj.transform.rotation.eulerAngles.x);
+        sendData.Add("rot_y", obj.transform.rotation.eulerAngles.y);
+        sendData.Add("rot_z", obj.transform.rotation.eulerAngles.z);
+
+
+        StartCoroutine(NetworkManager.Instance.ProcessNetwork(sendData, Reply_Set_DB_Install_Buliding));
+    }
+    void Reply_Set_DB_Install_Buliding(string json)
+    {
+        int obj_index = JsonReader.Deserialize<int>(json);
+
+        if(Get_Buliding_Action != null)
+        {
+            Get_Buliding_Action.Info.Obj_Index = obj_index;
+        }
+    }
+
+    void Get_DB_Install_Buliding()
+    {
+        int index = GameManager.Get_Inctance().Get_UserIndex();
+
+        Dictionary<string, object> sendData = new Dictionary<string, object>();
+        sendData.Add("contents", "Get_InstallOBJ");
+
+        sendData.Add("user_index", index);
+
+        StartCoroutine(NetworkManager.Instance.ProcessNetwork(sendData, Reply_Get_DB_Install_Buliding));
+    }
+    void Reply_Get_DB_Install_Buliding(string json)
+    {
+        Dictionary<string, object> dataDic = (Dictionary<string, object>)JsonReader.Deserialize(json, typeof(Dictionary<string, object>));
+
+        foreach (KeyValuePair<string, object> info in dataDic)
+        {
+            RecvInstallObjData data = JsonReader.Deserialize<RecvInstallObjData>(JsonWriter.Serialize(info.Value));
+            Vector3 Pos = new Vector3(data.Pos_x, data.Pos_y, data.Pos_z);
+            Vector3 Rot = new Vector3(data.Rot_x, data.Rot_y, data.Rot_z);
+            StoreManager.Get_Inctance().Create_Install_OBJ(data.Obj_Index, data.Buliding_ID, Pos, Rot);
+        }
+    }
+
+    private class RecvUserData
+    {
+        public int Level;
+        public float Exp;
+        public int Gold;
+        public int Jam;
+        public int Max_House;
+    }
+    private class RecvInstallObjData
+    {
+        public int Obj_Index;
+        public int Buliding_ID;
+        public float Pos_x;
+        public float Pos_y;
+        public float Pos_z;
+        public float Rot_x;
+        public float Rot_y;
+        public float Rot_z;
+    }
 }

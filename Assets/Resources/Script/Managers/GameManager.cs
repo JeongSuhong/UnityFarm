@@ -31,7 +31,10 @@ public class GameManager : MonoBehaviour
         DontDestroyOnLoad(this);
     }
 
-    // Update is called once per frame
+    public void Start_Update()
+    {
+        StartCoroutine(C_Update());
+    }
     IEnumerator C_Update()
     {
         while (true)
@@ -51,7 +54,7 @@ public class GameManager : MonoBehaviour
 
                     if (obj.CompareTag("EventOBJ"))
                     { 
-                        obj.GetComponent<EventOBJ_Action>().Start_Action();
+                        obj.GetComponent<BulidingOBJ_Action>().Start_Action();
                     }
                 }
 

@@ -17,7 +17,7 @@ public class Item_Install_UI_Action : MonoBehaviour {
     public GameObject NotInstall_Icon;
 
     GameObject Select_OBJ = null;
-    int ID;
+    Item Select_OBJ_Info;
     private static Item_Install_UI_Action instance = null;
 
     public static Item_Install_UI_Action Get_Inctance()
@@ -42,11 +42,11 @@ public class Item_Install_UI_Action : MonoBehaviour {
         instance = this;
     }
 
-    public void View_Item_InstallUI(GameObject obj, int id)
+    public void View_Item_InstallUI(GameObject obj , Item item_info)
     {
         GetComponent<UIPanel>().alpha = 1f;
-        ID = id;
         Select_OBJ = obj;
+        Select_OBJ_Info = item_info;
         StartCoroutine(C_View_Item_InstallUI());
     }
     IEnumerator C_View_Item_InstallUI()
@@ -72,7 +72,7 @@ public class Item_Install_UI_Action : MonoBehaviour {
 
     void Check_OBJState()
     {
-        EventOBJ_Action state = Select_OBJ.GetComponent<EventOBJ_Action>();
+        BulidingOBJ_Action state = Select_OBJ.GetComponent<BulidingOBJ_Action>();
 
             Set_Base_Button_UI();
 
@@ -125,14 +125,17 @@ public class Item_Install_UI_Action : MonoBehaviour {
         GameObject obj = Instantiate(Select_OBJ, Select_OBJ.transform.position, Select_OBJ.transform.rotation) as GameObject;
         obj.name = Select_OBJ.name;
         Destroy( obj.GetComponent<Rigidbody>() );
-        EventOBJ_Action obj_action = obj.GetComponent<EventOBJ_Action>();
+        BulidingOBJ_Action obj_action = obj.GetComponent<BulidingOBJ_Action>();
 
         obj_action.Is_SaveItem = true;
         obj_action.Is_Install = true;
 
-        obj.GetComponent<EventOBJ_Action>().Install_Action();
- 
-        UserManager.Get_Inctance().Increase_Gold(-100);
+        obj_action.Install_Action();
+
+        obj_action.Info = Select_OBJ_Info;
+
+        UserManager.Get_Inctance().Increase_Gold(obj_action.Info.Price);
+        UserManager.Get_Inctance().Set_DB_Install_Buliding(obj_action, obj);
 
         NotView_Item_InstallUI();
 

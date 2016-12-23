@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Farm_Action : EventOBJ_Action
+public class Farm_Action : BulidingOBJ_Action
 {
     public CropInfo Planted_Crop;
     public GameObject CropModelObj;

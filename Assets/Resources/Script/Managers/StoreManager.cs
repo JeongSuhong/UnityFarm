@@ -33,7 +33,7 @@ public class StoreManager : MonoBehaviour {
         instance = this;
 
         Item test = new Item();
-        test.ID = 1;
+        test.Buliding_ID = 1;
         test.type = ITEM_TYPE.BUILDING;
         test.Name = "밭";
         test.Sprite_Name = "Farm";
@@ -45,7 +45,7 @@ public class StoreManager : MonoBehaviour {
         Items.Add(test);
 
         Item test2 = new Item();
-        test2.ID = 2;
+        test2.Buliding_ID = 2;
         test2.type = ITEM_TYPE.BUILDING;
         test2.Name = "집";
         test2.Sprite_Name = "House";
@@ -66,13 +66,44 @@ public class StoreManager : MonoBehaviour {
     {
         GameObject ItemUI = Instantiate(Store_Item_UI_Prefab, Grid_Items.transform) as GameObject;
         ItemUI.transform.localScale = Vector3.one;
-        ItemUI.name = item_info.ID.ToString();
+        ItemUI.name = item_info.Name.ToString();
 
         ItemUI.GetComponent<Store_Item_Action>().Set_Item_Info(item_info);
 
         Grid_Items.repositionNow = true;
     }
 
+    public void Create_Install_OBJ(int obj_index, int buliding_id, Vector3 pos, Vector3 rot)
+    {
+        Item Item_Info = Get_ItemInfo(buliding_id);
+
+        GameObject EventOBJ_Prefab = Resources.Load("Prefabs/EventOBJ/" + Item_Info.Model_Name) as GameObject;
+
+        if (EventOBJ_Prefab == null)
+        {
+            Debug.Log("Prefab Error!!!");
+            return;
+        }
+
+        GameObject obj = Instantiate(EventOBJ_Prefab, pos, Quaternion.identity) as GameObject;
+        obj.name = EventOBJ_Prefab.name;
+        Destroy(obj.GetComponent<Rigidbody>());
+        obj.transform.Rotate(rot);
+
+    }
+
+public Item Get_ItemInfo(int buliding_id)
+    {
+        for(int i = 0; i < Items.Count; i++)
+        {
+           if( Items[i].Buliding_ID == buliding_id )
+            {
+                return Items[i];
+            }
+        }
+
+        return null;
+    }
     public void View_StoreUI()
     {
         GetComponent<UIPanel>().alpha = 1;
@@ -92,7 +123,8 @@ public enum ITEM_TYPE
 }
 public class Item
 {
-    public int ID;
+    public int Obj_Index;
+    public int Buliding_ID;
     public ITEM_TYPE type;
     public string Name;
     public string Sprite_Name;
