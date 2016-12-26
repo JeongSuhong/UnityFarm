@@ -10,20 +10,15 @@ public class Select_CropsButton_Action : Base_Button_Action
     public UILabel Price;
     public UILabel GrowTime;
    
-    void Awake()
-    {
-        Crop_ID = 3;
-    }
-
     public void Set_Crop_info(CropInfo info)
     {
         Crop_ID = info.ID;
 
-        Icon.spriteName = info.SpriteName;
+        Icon.spriteName = info.Sprite_Name;
         Name.text = info.Name;
         Price.text = info.Price.ToString();
 
-        GrowTime.text = GameManager.Get_Inctance().Set_Text_Time(info.Grow_Time); ;
+        GrowTime.text = GameManager.Get_Inctance().Set_Text_Time(info.Grow_Time);
     }
 
     public void Select_Crop()

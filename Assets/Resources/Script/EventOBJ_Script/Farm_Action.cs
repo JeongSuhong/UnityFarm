@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using JsonFx.Json;
 
 public class Farm_Action : BulidingOBJ_Action
 {
@@ -39,11 +40,12 @@ public class Farm_Action : BulidingOBJ_Action
 
     public void Plant_Crop()
     {
+        Debug.Log(Info.Obj_Index);
         if(State != FARM_STATE.NONE) { return; }
 
         int Crop_ID = Select_Crops_Manager.Get_Inctance().Select_Crop_ID;
 
-        if(Crop_ID == 0) { return; }
+        if(Crop_ID == -1) { return; }
 
         State = FARM_STATE.GROWING;
 
@@ -68,7 +70,7 @@ public class Farm_Action : BulidingOBJ_Action
 
         UserManager.Get_Inctance().Obtain_Crop(Planted_Crop.ID, 1);
 
-        UIManager.Get_Inctance().Set_Drop_Item_Icon(gameObject, Planted_Crop.SpriteName);
+        UIManager.Get_Inctance().Set_Drop_Item_Icon(gameObject, Planted_Crop.Sprite_Name);
 
         Planted_Crop = null;
     }

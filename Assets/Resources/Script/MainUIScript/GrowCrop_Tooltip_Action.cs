@@ -11,7 +11,7 @@ public class GrowCrop_Tooltip_Action : MonoBehaviour {
     {
         Camera_Action.Get_Inctance().Set_NotCameraMoving();
 
-        CropIcon.spriteName = info.SpriteName;
+        CropIcon.spriteName = info.Sprite_Name;
         CropName.text = info.Name;
         GrowTime.text = farm.GrowTime.ToString();
 

@@ -25,7 +25,7 @@ public class Login_Action : MonoBehaviour {
 
         sendData.Add("user_id", Login_ID.value);
         sendData.Add("user_pw", Login_PW.value);
-        sendData.Add("login_time", DateTime.Now.ToString("yyyy-MM-dd-hh-mm-ss"));
+        sendData.Add("login_time", DateTime.Now);
 
         Debug.Log("로그인 시간 " + DateTime.Now.ToString());
 

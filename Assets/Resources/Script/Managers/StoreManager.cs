@@ -1,10 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using JsonFx.Json;
 
-public class StoreManager : MonoBehaviour {
+public class StoreManager : MonoBehaviour
+{
 
-    private List<Item> Items = new List<Item>();
+    private List<Item> ItemInfo = new List<Item>();
 
     public GameObject Store_Item_UI_Prefab;
     public UIGrid Grid_Items;
@@ -31,35 +33,7 @@ public class StoreManager : MonoBehaviour {
     void Awake()
     {
         instance = this;
-
-        Item test = new Item();
-        test.Buliding_ID = 1;
-        test.type = ITEM_TYPE.BUILDING;
-        test.Name = "밭";
-        test.Sprite_Name = "Farm";
-        test.Model_Name = "Farm";
-        test.Price = 100;
-        test.Buff_Happy = 10;
-        test.Buff_Speed = 0;
-
-        Items.Add(test);
-
-        Item test2 = new Item();
-        test2.Buliding_ID = 2;
-        test2.type = ITEM_TYPE.BUILDING;
-        test2.Name = "집";
-        test2.Sprite_Name = "House";
-        test2.Model_Name = "House";
-        test2.Price = 100;
-        test2.Buff_Happy = 0;
-        test2.Buff_Speed = 0;
-
-        Items.Add(test2);
-
-        for (int i = 0; i < Items.Count; i++)
-        {
-            Create_Store_Item_UI(Items[i]);
-        }
+        Get_DB_ItemInfo();
     }
 
     void Create_Store_Item_UI(Item item_info)
@@ -77,6 +51,8 @@ public class StoreManager : MonoBehaviour {
     {
         Item Item_Info = Get_ItemInfo(buliding_id);
 
+        if(Item_Info == null) { return; }
+
         GameObject EventOBJ_Prefab = Resources.Load("Prefabs/EventOBJ/" + Item_Info.Model_Name) as GameObject;
 
         if (EventOBJ_Prefab == null)
@@ -92,13 +68,13 @@ public class StoreManager : MonoBehaviour {
 
     }
 
-public Item Get_ItemInfo(int buliding_id)
+    public Item Get_ItemInfo(int find_id)
     {
-        for(int i = 0; i < Items.Count; i++)
+        for (int i = 0; i < ItemInfo.Count; i++)
         {
-           if( Items[i].Buliding_ID == buliding_id )
+            if (ItemInfo[i].Buliding_ID == find_id)
             {
-                return Items[i];
+                return ItemInfo[i];
             }
         }
 
@@ -114,23 +90,49 @@ public Item Get_ItemInfo(int buliding_id)
         GetComponent<UIPanel>().alpha = 0;
         GameManager.Get_Inctance().Set_NotViewUI();
     }
+
+
+
+    public void Get_DB_ItemInfo()
+    {
+        Dictionary<string, object> sendData = new Dictionary<string, object>();
+        sendData.Add("contents", "Get_ItemInfo");
+
+        StartCoroutine(NetworkManager.Instance.ProcessNetwork(sendData, Reply_DB_ItemInfo));
+    }
+    public void Reply_DB_ItemInfo(string json)
+    {
+        // JsonReader.Deserialize() : 원하는 자료형의 json을 만들 수 있다
+        Dictionary<string, object> dataDic = (Dictionary<string, object>)JsonReader.Deserialize(json, typeof(Dictionary<string, object>));
+
+        foreach (KeyValuePair<string, object> info in dataDic)
+        {
+            Item data = JsonReader.Deserialize<Item>(JsonWriter.Serialize(info.Value));
+
+            ItemInfo.Add(data);
+            Create_Store_Item_UI(data);
+        }
+    }
+
 }
 public enum ITEM_TYPE
 {
-    NONE = -1,
     BUILDING = 0,
     LANDSCAPING,
+     CONSUMABLES,
 }
 public class Item
 {
-    public int Obj_Index;
     public int Buliding_ID;
-    public ITEM_TYPE type;
+    public ITEM_TYPE Type;
     public string Name;
     public string Sprite_Name;
     public string Model_Name;
     public int Price;
     public int Buff_Happy;
-    public int Buff_Speed;
+
+    public int Obj_Index;
+
+    public bool Check_Install;
 }
 

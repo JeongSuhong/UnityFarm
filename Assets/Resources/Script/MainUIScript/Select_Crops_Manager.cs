@@ -33,20 +33,21 @@ public class Select_Crops_Manager : MonoBehaviour {
     public void Select_Crop(int crop_id)
     {
         Select_Crop_ID = crop_id;
+        string Crop_SpriteName = CropsManager.Get_Inctance().Get_CropInfo(crop_id).Sprite_Name;
 
-        Select_Farm_UI.GetComponent<Select_Farm_Action>().Select_Farm("radish");
+        Select_Farm_UI.GetComponent<Select_Farm_Action>().Select_Farm(Crop_SpriteName);
 
         NotView_SelectCrops_UI();
     }
 
     public void Set_SelectCrop_Nothing()
     {
-        Select_Crop_ID = 0;
+        Select_Crop_ID = -1;
     }
 
     public void View_SelectCrops_UI()
     {
-        Select_Crop_ID = 0;
+        Select_Crop_ID = -1;
         Camera_Action.Get_Inctance().Set_CameraMoving();
         GetComponent<UIPanel>().alpha = 1;
     }

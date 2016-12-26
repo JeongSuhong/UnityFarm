@@ -5,14 +5,9 @@ public class BulidingOBJ_Action : MonoBehaviour {
 
     public Item Info;
 
-    public bool Check_Is_Install = true;
     public bool Is_Install = false;
+    public bool Check_Is_Install = true;
     public bool Is_SaveItem = false;
-
-    void Awake()
-    {
-        Is_Install = false;
-    }
 
     public virtual void Start_Action()
     {

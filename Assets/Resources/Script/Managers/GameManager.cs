@@ -66,7 +66,7 @@ public class GameManager : MonoBehaviour
 
     public void Plant_Drag_Farm()
     {
-        if (Select_Crops_Manager.Get_Inctance().Select_Crop_ID == 0) { return; }
+        if (Select_Crops_Manager.Get_Inctance().Select_Crop_ID == -1) { return; }
 
         StopCoroutine("C_Update");
         StartCoroutine(C_Plant_Drag_Farm());

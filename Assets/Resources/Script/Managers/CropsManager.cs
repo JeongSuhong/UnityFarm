@@ -1,10 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using JsonFx.Json;
 
 public class CropsManager : MonoBehaviour
 { 
-    Dictionary<int, CropInfo> CropsInfo = new Dictionary<int, CropInfo>();
+    List<CropInfo> CropsInfo = new List<CropInfo>();
 
     public UIGrid Grid_Select_Crops;
     public GameObject Select_Crop_UI_Prefab;
@@ -31,54 +32,26 @@ public class CropsManager : MonoBehaviour
     void Awake()
     {
         instance = this;
-
-        CropInfo testInfo = new CropInfo();
-        testInfo.ID = 3;
-        testInfo.Is_Farmming = true;
-        testInfo.Name = "사탕무";
-        testInfo.SpriteName = "radish";
-        testInfo.Grow_Time = 5;
-        testInfo.Selling_Price = 30;
-        testInfo.Price = 10;
-
-        CropsInfo.Add(testInfo.ID, testInfo);
-
-        CropInfo testInfo1 = new CropInfo();
-        testInfo1.ID = 0;
-        testInfo1.Is_Farmming = false;
-        testInfo1.Name = "나뭇잎";
-        testInfo1.SpriteName = "leaf";
-        testInfo1.Grow_Time = 0;
-        testInfo1.Selling_Price = 1;
-        testInfo1.Price = 0;
-
-        CropsInfo.Add(testInfo1.ID, testInfo1);
-
-        foreach (KeyValuePair<int, CropInfo> crop in CropsInfo)
-        {
-
-            if (crop.Value.Is_Farmming)
-            { 
-
-                Set_SelectCropUI(crop.Value);
-            }
-        }
+        Get_DB_CropInfo();
     }
 
-    public CropInfo Get_CropInfo(int ID)
+    public CropInfo Get_CropInfo(int find_id)
     {
-        if(CropsInfo.ContainsKey(ID))
+        for (int i = 0; i < CropsInfo.Count; i++)
         {
-            return CropsInfo[ID];
+            if (CropsInfo[i].ID == find_id)
+            {
+                return CropsInfo[i];
+            }
         }
-        else
-        {
-            return null;
-        }
+
+        return null;
     }
 
     void Set_SelectCropUI(CropInfo info)
     {
+        if(info.Is_Farmming == false) { return; }
+
         GameObject obj = Instantiate(Select_Crop_UI_Prefab, Grid_Select_Crops.transform) as GameObject;
         obj.transform.localScale = Vector3.one;
         obj.name = info.Name;
@@ -86,14 +59,33 @@ public class CropsManager : MonoBehaviour
 
         Grid_Select_Crops.repositionNow = true;
     }
-}
 
+    public void Get_DB_CropInfo()
+    {
+        Dictionary<string, object> sendData = new Dictionary<string, object>();
+        sendData.Add("contents", "Get_CropInfo");
+
+        StartCoroutine(NetworkManager.Instance.ProcessNetwork(sendData, Reply_DB_CropInfo));
+    }
+    public void Reply_DB_CropInfo(string json)
+    {
+        // JsonReader.Deserialize() : 원하는 자료형의 json을 만들 수 있다
+        Dictionary<string, object> dataDic = (Dictionary<string, object>)JsonReader.Deserialize(json, typeof(Dictionary<string, object>));
+
+        foreach (KeyValuePair<string, object> info in dataDic)
+        {
+            CropInfo data = JsonReader.Deserialize<CropInfo>(JsonWriter.Serialize(info.Value));
+            CropsInfo.Add(data);
+            Set_SelectCropUI(data);
+        }
+    }
+}
 public class CropInfo
 {
     public int ID;
     public bool Is_Farmming;
     public string Name;
-    public string SpriteName;
+    public string Sprite_Name;
     public int Grow_Time;
     public int Selling_Price;
     public int Price;

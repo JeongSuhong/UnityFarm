@@ -118,11 +118,10 @@ public class UserManager : MonoBehaviour {
     IEnumerator C_Increase_Gold(int value)
     {
         float text_gold = 0;
-        // Mathf.Sign()을 쓰면 음수일때는 -, 양수일때는 +로 계산이 된다.
         while (true)
         {
             text_gold = int.Parse(UIManager.Get_Inctance().Label_Gold.text);
-            text_gold += Time.deltaTime * 100f;
+            text_gold += Time.deltaTime * 300f;
 
             if (text_gold >= Gold)
             {
@@ -184,11 +183,10 @@ public class UserManager : MonoBehaviour {
         int index = GameManager.Get_Inctance().Get_UserIndex();
         Get_Buliding_Action = buliding_action;
 
-
         Dictionary<string, object> sendData = new Dictionary<string, object>();
         sendData.Add("contents", "Set_InstallOBJ");
 
-        sendData.Add("user_id", index);
+        sendData.Add("user_index", index);
         sendData.Add("buliding_id", buliding_action.Info.Buliding_ID);
         sendData.Add("pos_x", obj.transform.position.x);
         sendData.Add("pos_y", obj.transform.position.y);
@@ -196,12 +194,15 @@ public class UserManager : MonoBehaviour {
         sendData.Add("rot_x", obj.transform.rotation.eulerAngles.x);
         sendData.Add("rot_y", obj.transform.rotation.eulerAngles.y);
         sendData.Add("rot_z", obj.transform.rotation.eulerAngles.z);
+        sendData.Add("check_install", buliding_action.Info.Check_Install);
 
 
         StartCoroutine(NetworkManager.Instance.ProcessNetwork(sendData, Reply_Set_DB_Install_Buliding));
     }
     void Reply_Set_DB_Install_Buliding(string json)
     {
+        if (JsonReader.Deserialize<string>(json) == null) { return; }
+
         int obj_index = JsonReader.Deserialize<int>(json);
 
         if(Get_Buliding_Action != null)
@@ -223,6 +224,8 @@ public class UserManager : MonoBehaviour {
     }
     void Reply_Get_DB_Install_Buliding(string json)
     {
+        if (JsonReader.Deserialize<string>(json) == null) { return; }
+
         Dictionary<string, object> dataDic = (Dictionary<string, object>)JsonReader.Deserialize(json, typeof(Dictionary<string, object>));
 
         foreach (KeyValuePair<string, object> info in dataDic)
@@ -230,7 +233,11 @@ public class UserManager : MonoBehaviour {
             RecvInstallObjData data = JsonReader.Deserialize<RecvInstallObjData>(JsonWriter.Serialize(info.Value));
             Vector3 Pos = new Vector3(data.Pos_x, data.Pos_y, data.Pos_z);
             Vector3 Rot = new Vector3(data.Rot_x, data.Rot_y, data.Rot_z);
-            StoreManager.Get_Inctance().Create_Install_OBJ(data.Obj_Index, data.Buliding_ID, Pos, Rot);
+
+            if (data.Check_Install)
+            {
+                StoreManager.Get_Inctance().Create_Install_OBJ(data.Obj_Index, data.Buliding_ID, Pos, Rot);
+            }
         }
     }
 
@@ -252,5 +259,6 @@ public class UserManager : MonoBehaviour {
         public float Rot_x;
         public float Rot_y;
         public float Rot_z;
+                public bool Check_Install;
     }
 }

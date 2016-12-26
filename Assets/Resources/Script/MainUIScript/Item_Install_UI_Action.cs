@@ -134,7 +134,7 @@ public class Item_Install_UI_Action : MonoBehaviour {
 
         obj_action.Info = Select_OBJ_Info;
 
-        UserManager.Get_Inctance().Increase_Gold(obj_action.Info.Price);
+        UserManager.Get_Inctance().Increase_Gold(-obj_action.Info.Price);
         UserManager.Get_Inctance().Set_DB_Install_Buliding(obj_action, obj);
 
         NotView_Item_InstallUI();
