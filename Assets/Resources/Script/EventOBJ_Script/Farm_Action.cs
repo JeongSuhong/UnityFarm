@@ -40,7 +40,6 @@ public class Farm_Action : BulidingOBJ_Action
 
     public void Plant_Crop()
     {
-        Debug.Log(Info.Obj_Index);
         if(State != FARM_STATE.NONE) { return; }
 
         int Crop_ID = Select_Crops_Manager.Get_Inctance().Select_Crop_ID;

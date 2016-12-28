@@ -64,7 +64,7 @@ public class NetworkManager : MonoBehaviour
 
         // 7. 수신된 데이타에 에러가 있으면 에러를 출력한다. 
         // 프로토콜 단에서 에러 발생 : URL이 잘못됐을 때나, 네트워크가 끊겼을 때
-        if (!string.IsNullOrEmpty(www.error) || string.IsNullOrEmpty(www.text))
+        if (!string.IsNullOrEmpty(www.error) || www.text == string.Empty)
         {
             Debug.Log(www.error);
             Debug.Log("네트워크 접속이 원할하지 않아 네트워크 관련 에러 발생");
@@ -95,7 +95,11 @@ public class NetworkManager : MonoBehaviour
                 // 실제 처리 결과물
                 if (receivePacket.ContainsKey("data"))
                 {
-                    if ((int)receivePacket["result"] == 0)
+                    if(receivePacket["data"] == null)
+                    {
+                        Debug.Log("서버에서 반환하는 결과값이 존재하지 않습니다.");
+                    }
+                    else if ((int)receivePacket["result"] == 0)
                     {
                         // delegate 함수에게 결과물을 돌려 준다.(결과물만 JSON을 변환해서 전달)
                         _reply(JsonWriter.Serialize(receivePacket["data"]));

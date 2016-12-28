@@ -1,11 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using JsonFx.Json;
 
-public class CitizenManager : MonoBehaviour {
-
+public class CitizenManager : MonoBehaviour
+{
     public GameObject Citizen_Prefab;
-    public List<Citizen_Action> Citizens = new List<Citizen_Action>();
+    private List<Citizen_Info> Citizen_Infos = new List<Citizen_Info>();
+    public List<Citizen_Info> Citizens = new List<Citizen_Info>();
 
     private static CitizenManager instance = null;
 
@@ -29,33 +31,47 @@ public class CitizenManager : MonoBehaviour {
     void Awake()
     {
         instance = this;
-    }
-
-
-    void Start()
-    {
-        for (int i = 0; i < gameObject.transform.childCount; i++)
-        {
-            Citizens.Add(gameObject.transform.GetChild(i).gameObject.GetComponent<Citizen_Action>());
-        }
+        Get_DB_CitizenInfo();
+        Get_DB_User_CitizenData();
     }
 
     public void Create_Citizen(GameObject house)
     {
+        int Citizen_Id = Random.Range(0, Citizen_Infos.Count);
+        Citizen_Info info = Citizen_Infos[Citizen_Id];
+        info.HP = info.Max_HP;
+
         GameObject citizen = Instantiate(Citizen_Prefab, this.gameObject.transform) as GameObject;
         Citizen_Action citizen_action = citizen.GetComponent<Citizen_Action>();
+        info.Home_Index = house.GetComponent<House_Action>().Info.Obj_Index;
         citizen_action.Set_House(house);
         citizen.transform.localPosition = house.gameObject.transform.position + new Vector3(0f, 0f, -1.2f);
+        int Model_Index = citizen_action.Set_Model();
+        info.Model_Index = Model_Index;
+        citizen_action.Info = info;
+        
+        Citizens.Add(citizen_action.Info);
+
+        citizen_action.Set_DB_User_CitizenData();
+        citizen_action.Set_Active();
+    }
+    public void Create_Citizen(GameObject house, Citizen_Info citizen_info)
+    {
+        GameObject citizen = Instantiate(Citizen_Prefab, this.gameObject.transform) as GameObject;
+        Citizen_Action citizen_action = citizen.GetComponent<Citizen_Action>();
+        citizen_action.Info = citizen_info;
+        citizen.transform.localPosition = house.gameObject.transform.position + new Vector3(0f, 0f, -1.2f);
+        citizen_action.Set_House(house);
+        citizen_action.Set_Model();
         citizen_action.Set_Active();
 
-        Citizens.Add(citizen_action);
-
+        Citizens.Add(citizen_action.Info);
     }
-    public Citizen_Action Check_Set_House(GameObject house)
+    public Citizen_Info Check_Set_House(int house_index)
     {
         for (int i = 0; i < Citizens.Count; i++)
         {
-            if (Citizens[i].Select_House == house)
+            if (Citizens[i].Home_Index == house_index)
             {
                 return Citizens[i];
             }
@@ -73,20 +89,63 @@ public class CitizenManager : MonoBehaviour {
 
         return false;
     }
+
+    private void Get_DB_CitizenInfo()
+    {
+        Dictionary<string, object> sendData = new Dictionary<string, object>();
+        sendData.Add("contents", "Get_CitizenInfo");
+
+        StartCoroutine(NetworkManager.Instance.ProcessNetwork(sendData, Reply_Get_DB_CitizenInfo));
+    }
+    private void Reply_Get_DB_CitizenInfo(string json)
+    {
+        Dictionary<string, object> dataDic = (Dictionary<string, object>)JsonReader.Deserialize(json, typeof(Dictionary<string, object>));
+
+        foreach (KeyValuePair<string, object> info in dataDic)
+        {
+            Citizen_Info data = JsonReader.Deserialize<Citizen_Info>(JsonWriter.Serialize(info.Value));
+            Citizen_Infos.Add(data);
+        }
+    }
+
+    private void Get_DB_User_CitizenData()
+    {
+        Dictionary<string, object> sendData = new Dictionary<string, object>();
+        sendData.Add("contents", "Get_User_CitizenData");
+
+        sendData.Add("user_index", GameManager.Get_Inctance().Get_UserIndex());
+
+        StartCoroutine(NetworkManager.Instance.ProcessNetwork(sendData, Reply_Get_DB_User_CitizenData));
+    }
+    private void Reply_Get_DB_User_CitizenData(string json)
+    {
+        Dictionary<string, object> dataDic = (Dictionary<string, object>)JsonReader.Deserialize(json, typeof(Dictionary<string, object>));
+
+        foreach (KeyValuePair<string, object> info in dataDic)
+        {
+            Citizen_Info data = JsonReader.Deserialize<Citizen_Info>(JsonWriter.Serialize(info.Value));
+            Citizens.Add(data);
+        }
+    }
 }
 
-public class Class_Citizen
+
+public class Citizen_Info
 {
-    public CITIZEN_TYPE Type = CITIZEN_TYPE.CHEF;
-    public string Type_Explanation = "Type 설명문입니다. ";
-    public string Name = "Test Name";
+    public float Max_HP;
+    public float Max_Tiredness;
+    public int Charm;
+    public string Name;
+    public CITIZEN_TYPE Type;
+
+    public int id;
+    public string Type_Explanation;
     public int Level = 1;
     public float Exp = 0;
-    public float Max_HP = 100;
-    public float HP = 100;
-    public float Max_Tiredness = 100;
-    public float Tiredness = 0;
-    public int Charm= 1;
+    public float HP;
+    public float Tiredness;
+    public int Model_Index = -1;
+    public int Home_Index = -1;
 
 
 }

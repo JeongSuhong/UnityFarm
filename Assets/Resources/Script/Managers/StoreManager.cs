@@ -5,7 +5,6 @@ using JsonFx.Json;
 
 public class StoreManager : MonoBehaviour
 {
-
     private List<Item> ItemInfo = new List<Item>();
 
     public GameObject Store_Item_UI_Prefab;
@@ -32,8 +31,9 @@ public class StoreManager : MonoBehaviour
 
     void Awake()
     {
-        instance = this;
         Get_DB_ItemInfo();
+
+        instance = this;
     }
 
     void Create_Store_Item_UI(Item item_info)
@@ -51,7 +51,9 @@ public class StoreManager : MonoBehaviour
     {
         Item Item_Info = Get_ItemInfo(buliding_id);
 
-        if(Item_Info == null) { return; }
+        Debug.Log(Item_Info.Obj_Index);
+
+        if (Item_Info == null) { return; }
 
         GameObject EventOBJ_Prefab = Resources.Load("Prefabs/EventOBJ/" + Item_Info.Model_Name) as GameObject;
 
@@ -65,6 +67,10 @@ public class StoreManager : MonoBehaviour
         obj.name = EventOBJ_Prefab.name;
         Destroy(obj.GetComponent<Rigidbody>());
         obj.transform.Rotate(rot);
+        obj.GetComponent<BulidingOBJ_Action>().Info = Item_Info;
+        obj.GetComponent<BulidingOBJ_Action>().Set_Info_ObjIndex(obj_index);
+
+        obj.GetComponent<BulidingOBJ_Action>().Install_Action();
 
     }
 
@@ -131,7 +137,7 @@ public class Item
     public int Price;
     public int Buff_Happy;
 
-    public int Obj_Index;
+    public int Obj_Index = -1;
 
     public bool Check_Install;
 }

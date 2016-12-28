@@ -4,7 +4,6 @@ using System.Collections.Generic;
 
 public class House_Action : BulidingOBJ_Action
 {
-
     public GameObject Sleep_Effect;
 
     GameObject Sleep_Gauge;
@@ -12,23 +11,25 @@ public class House_Action : BulidingOBJ_Action
 
     public override void Start_Action()
     {
-        if (CitizenManager.Get_Inctance().Check_Set_House(gameObject) == null)
+        if (CitizenManager.Get_Inctance().Check_Set_House(Info.Obj_Index) == null)
         {
             Debug.Log("citizen Error!!! ");
             return;
         }
 
-        Class_Citizen citizen = CitizenManager.Get_Inctance().Check_Set_House(gameObject).Info;
+        Citizen_Info citizen = CitizenManager.Get_Inctance().Check_Set_House(Info.Obj_Index);
+
+        Debug.Log(Info.Obj_Index);
 
         Citizen_Infomation_UI_Action.Get_Inctance().View_Window(citizen);
     }
     public override void Install_Action()
     {
-        Citizen_Action Citizen = CitizenManager.Get_Inctance().Check_Set_House(gameObject);
+        Citizen_Info Citizen = CitizenManager.Get_Inctance().Check_Set_House(Info.Obj_Index);
 
         if (Citizen != null)
         {
-
+            CitizenManager.Get_Inctance().Create_Citizen(gameObject, Citizen);
         }
         else
         {

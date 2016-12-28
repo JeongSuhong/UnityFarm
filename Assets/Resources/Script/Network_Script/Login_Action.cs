@@ -37,7 +37,6 @@ public class Login_Action : MonoBehaviour {
         int index = JsonReader.Deserialize<int>(json);
 
         GameManager.Get_Inctance().Set_UserIndex(index);
-
         // 회원 가입에 성공 했으므로 바로 로그인을 시도한다.
         StartCoroutine(Login());
     }

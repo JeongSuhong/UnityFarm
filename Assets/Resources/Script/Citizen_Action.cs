@@ -1,32 +1,38 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using JsonFx.Json;
 
 public class Citizen_Action : Citizen_Variable {
-
-    void Awake()
-    {
-        GameObject Citizen_Model = transform.FindChild("Model").gameObject;
-        int R = Random.Range(0, Citizen_Model.transform.childCount);
-        Citizen_Model.transform.GetChild(R).gameObject.SetActive(true);
-
-        Transform effects = transform.FindChild("Effect");
-        Effects = new ParticleSystem[effects.childCount];
-        for(int i = 0; i < effects.childCount; i++)
-        {
-            Effects[i] = effects.GetChild(i).GetComponent<ParticleSystem>();
-        }
-        Ani = Citizen_Model.transform.GetChild(R).gameObject.GetComponent<Animation>();
-
-
-        //test
-
-        Loneliness = 100f;
-    }
 
     public void Set_House(GameObject house)
     {
         Select_House = house;
+    }
+    public int Set_Model()
+    {
+        GameObject Citizen_Model = transform.FindChild("Model").gameObject;
+
+        if (Info.Model_Index != -1)
+        {
+            Citizen_Model.transform.GetChild(Info.Model_Index).gameObject.SetActive(true);
+        }
+        else
+        {
+            int Model_Index = Random.Range(0, Citizen_Model.transform.childCount);
+            Citizen_Model.transform.GetChild(Model_Index).gameObject.SetActive(true);
+            Info.Model_Index = Model_Index;
+        }
+
+        Transform effects = transform.FindChild("Effect");
+        Effects = new ParticleSystem[effects.childCount];
+        for (int i = 0; i < effects.childCount; i++)
+        {
+            Effects[i] = effects.GetChild(i).GetComponent<ParticleSystem>();
+        }
+        Ani = Citizen_Model.transform.GetChild(Info.Model_Index).gameObject.GetComponent<Animation>();
+
+        return Info.Model_Index;
     }
 
     public void Set_Active()
@@ -57,11 +63,6 @@ public class Citizen_Action : Citizen_Variable {
 
             switch(State)
             {
-                case CITIZEN_STATE.NONE:
-                    {
-                        break;
-                    }
-
                 case CITIZEN_STATE.WALK:
                     {
                         Set_Ani(CITIZEN_ANI.WALK);
@@ -263,10 +264,38 @@ public class Citizen_Action : Citizen_Variable {
         }
         else if (col.gameObject.CompareTag("EventOBJ"))
         {
-            if(col.GetComponent<BulidingOBJ_Action>().Info.Check_Install != true) { return; }
+            if(col.GetComponent<BulidingOBJ_Action>().Is_Install != true) { return; }
 
             Event_OBJ = col.gameObject;
             Check_Event(col.gameObject.name);
         }
     }
+
+    public void Set_DB_User_CitizenData()
+    {
+        Dictionary<string, object> sendData = new Dictionary<string, object>();
+        sendData.Add("contents", "Set_User_CitizensData");
+
+        sendData.Add("user_index", GameManager.Get_Inctance().Get_UserIndex());
+        sendData.Add("citizen_type", (int)Info.Type);
+
+        sendData.Add("model_type", Info.Model_Index);
+        sendData.Add("level", Info.Level);
+        sendData.Add("max_hp", Info.Max_HP);
+        sendData.Add("hp", Info.HP);
+        sendData.Add("max_tiredness", Info.Max_Tiredness);
+        sendData.Add("tiredness", Info.Tiredness);
+        sendData.Add("charm", Info.Charm);
+        sendData.Add("exp", Info.Exp);
+        sendData.Add("home_index", Info.Home_Index);
+
+        StartCoroutine(NetworkManager.Instance.ProcessNetwork(sendData, Reply_Set_DB_User_CitizenData));
+    }
+    private void Reply_Set_DB_User_CitizenData(string json)
+    {
+        int Citizen_Id = JsonReader.Deserialize<int>(json);
+
+        Info.id = Citizen_Id;
+    }
+
 }

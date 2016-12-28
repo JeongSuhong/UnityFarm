@@ -6,7 +6,7 @@ public class Citizen_Variable : MonoBehaviour {
     public CITIZEN_STATE State = CITIZEN_STATE.NONE;
     protected Queue<CITIZEN_STATE> Events = new Queue<CITIZEN_STATE>();
 
-    public Class_Citizen Info  = new Class_Citizen();
+    public Citizen_Info Info  = new Citizen_Info();
 
     protected float Walk_Speed = 1.0f;
 

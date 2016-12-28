@@ -3,7 +3,7 @@ using System.Collections;
 
 public class BulidingOBJ_Action : MonoBehaviour {
 
-    public Item Info;
+    public Item Info = new Item();
 
     public bool Is_Install = false;
     public bool Check_Is_Install = true;
@@ -23,6 +23,11 @@ public class BulidingOBJ_Action : MonoBehaviour {
         Check_Is_Install = true;
     }
 
+    void Update()
+    {
+       Debug.Log(  Info.Obj_Index );
+    }
+
     void OnTriggerEnter(Collider col)
     {
         if(col.gameObject.CompareTag("EventOBJ"))
@@ -37,4 +42,10 @@ public class BulidingOBJ_Action : MonoBehaviour {
             Check_Is_Install = true;
         }
     }
+
+    public void Set_Info_ObjIndex(int index)
+    {
+        Info.Obj_Index = index;
+    }
+
 }

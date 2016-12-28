@@ -38,7 +38,9 @@ public class UserManager : MonoBehaviour {
         instance = this;
 
         GameManager.Get_Inctance().Start_Update();
-
+    }
+    void Start()
+    {
         Get_DB_UserData();
         Get_DB_Install_Buliding();
     }
@@ -184,7 +186,7 @@ public class UserManager : MonoBehaviour {
         Get_Buliding_Action = buliding_action;
 
         Dictionary<string, object> sendData = new Dictionary<string, object>();
-        sendData.Add("contents", "Set_InstallOBJ");
+        sendData.Add("contents", "Set_User_InstallOBJData");
 
         sendData.Add("user_index", index);
         sendData.Add("buliding_id", buliding_action.Info.Buliding_ID);
@@ -201,8 +203,6 @@ public class UserManager : MonoBehaviour {
     }
     void Reply_Set_DB_Install_Buliding(string json)
     {
-        if (JsonReader.Deserialize<string>(json) == null) { return; }
-
         int obj_index = JsonReader.Deserialize<int>(json);
 
         if(Get_Buliding_Action != null)
@@ -216,7 +216,7 @@ public class UserManager : MonoBehaviour {
         int index = GameManager.Get_Inctance().Get_UserIndex();
 
         Dictionary<string, object> sendData = new Dictionary<string, object>();
-        sendData.Add("contents", "Get_InstallOBJ");
+        sendData.Add("contents", "Get_User_InstallOBJData");
 
         sendData.Add("user_index", index);
 
@@ -224,8 +224,6 @@ public class UserManager : MonoBehaviour {
     }
     void Reply_Get_DB_Install_Buliding(string json)
     {
-        if (JsonReader.Deserialize<string>(json) == null) { return; }
-
         Dictionary<string, object> dataDic = (Dictionary<string, object>)JsonReader.Deserialize(json, typeof(Dictionary<string, object>));
 
         foreach (KeyValuePair<string, object> info in dataDic)
@@ -259,6 +257,6 @@ public class UserManager : MonoBehaviour {
         public float Rot_x;
         public float Rot_y;
         public float Rot_z;
-                public bool Check_Install;
+        public bool Check_Install;
     }
 }

@@ -39,7 +39,7 @@ public class Citizen_Infomation_UI_Action : MonoBehaviour {
         instance = this;
     }
 
-    void Set_Info(Class_Citizen citizen)
+    void Set_Info(Citizen_Info citizen)
     {
         Label_Name.text = citizen.Name;
         Slider_HP.value = citizen.HP / citizen.Max_HP;
@@ -53,7 +53,7 @@ public class Citizen_Infomation_UI_Action : MonoBehaviour {
         Slider_Exp.value = citizen.Exp;
         Label_Exp.text = citizen.Exp.ToString() + "%";
     }
-    public void View_Window(Class_Citizen citizen)
+    public void View_Window(Citizen_Info citizen)
     {
         Time.timeScale = 0f;
         GetComponent<UIPanel>().alpha = 1;
