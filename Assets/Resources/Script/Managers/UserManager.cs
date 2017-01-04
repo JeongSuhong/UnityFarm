@@ -25,6 +25,9 @@ public class UserManager : MonoBehaviour {
     private int Gold = 1000;
     private int Jam = 100;
     public int Max_House;
+    public int House_Count;
+    public int Max_Farm;
+    public int Farm_Count;
 
     private static UserManager instance = null;
 
@@ -166,6 +169,20 @@ public class UserManager : MonoBehaviour {
         Set_DB_Install_Buliding(obj_action, obj);
     }
 
+    public void Increase_House_Count()
+    {
+        House_Count++;
+        UIManager.Get_Inctance().Set_HouseCount_UI(House_Count, Max_House);
+    }
+    public bool Check_Install_House()
+    {
+        if(House_Count >= Max_House)
+        {
+            return false;
+        }
+
+        return true;
+    }
 
     private BulidingOBJ_Action Get_Buliding_Action;
 
@@ -197,8 +214,7 @@ public class UserManager : MonoBehaviour {
         Jam = data.Jam;
         UIManager.Get_Inctance().Label_Jam.text = Jam.ToString();
         Max_House = data.Max_House;
-        //test
-        UIManager.Get_Inctance().Label_House.text = " 0 / " + Max_House.ToString();
+        UIManager.Get_Inctance().Set_HouseCount_UI(House_Count, Max_House);
     }
 
     public void Set_DB_Install_Buliding(BulidingOBJ_Action buliding_action, GameObject obj)

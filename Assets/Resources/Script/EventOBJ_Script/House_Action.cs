@@ -29,6 +29,8 @@ public class House_Action : BulidingOBJ_Action
     }
     public override void Install_Action()
     {
+        UserManager.Get_Inctance().Increase_House_Count();
+
         Citizen_Info Citizen = CitizenManager.Get_Inctance().Check_Set_House(Obj_Index);
 
         if (Citizen != null)

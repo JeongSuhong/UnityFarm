@@ -54,7 +54,7 @@ public class CitizenManager : MonoBehaviour
         citizen_action.Set_House(house);
         int Model_Index = citizen_action.Set_Model();
         citizen_action.Info.Model_Index = Model_Index;
-        citizen_action.Info.id = Citizen_Id;
+        citizen_action.Info.ID = Citizen_Id;
         citizen_action.Info.HP = citizen_action.Info.Max_HP;   
         
         Citizens.Add(citizen_action.Info);
@@ -67,7 +67,7 @@ public class CitizenManager : MonoBehaviour
         GameObject citizen = Instantiate(Citizen_Prefab, this.gameObject.transform) as GameObject;
         Citizen_Action citizen_action = citizen.GetComponent<Citizen_Action>();
         citizen_action.Info = citizen_info;
-        Citizen_Info another_info = Citizen_Infos[citizen_info.id];
+        Citizen_Info another_info = Citizen_Infos[citizen_info.ID];
         citizen_action.Info.Name = another_info.Name;
 
 
@@ -151,7 +151,7 @@ public class CitizenManager : MonoBehaviour
         sendData.Add("user_index", GameManager.Get_Inctance().Get_UserIndex());
         sendData.Add("citizen_type", (int)Info.Type);
 
-        sendData.Add("citizen_id", Info.id);
+        sendData.Add("citizen_id", Info.ID);
         sendData.Add("model_type", Info.Model_Index);
         sendData.Add("level", Info.Level);
         sendData.Add("max_hp", Info.Max_HP);
@@ -176,7 +176,7 @@ public class Citizen_Info
     public string Name;
     public CITIZEN_TYPE Type;
 
-    public int id;
+    public int ID;
     public string Type_Explanation;
     public int Level = 1;
     public float Exp = 0;

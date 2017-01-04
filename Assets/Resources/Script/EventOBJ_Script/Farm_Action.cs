@@ -1,11 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using JsonFx.Json;
 
 /*
  * 밭 오브젝트가 사용하는 스크립트.
  * Start_Action() : 클릭시 실행 -> Check_Action_Farm()실행
- * Check_Action_Farm() : 밭의 상태를 판단해서 함수를 실행시킴
+ * Check_Action_Farm() : 밭의 상태를 판단해서 클릭했을때 해당 State에 관한 UI 나 함수를 실행
  * Plant_Crop() : 심을 작물의 정보를 파악하고 심음
  * Harvest_Crop() : 다 자란 작물을 수확하고 UserManager에게 수확작물정보 전달, 찌꺼기 오브젝트 생성
  * Cleaning_Farm() : 찌꺼기 오브젝트 삭제, 밭 상태 초기화 
@@ -30,6 +31,11 @@ public class Farm_Action : BulidingOBJ_Action
         Harvest_Effect.SetActive(false);
         Check_Action_Farm();
     }
+    public override void Install_Action()
+    {
+        Get_DB_User_PlantData(Obj_Index);
+    }
+
     public void Check_Action_Farm()
     {
         if (State == FARM_STATE.NONE)
@@ -58,6 +64,8 @@ public class Farm_Action : BulidingOBJ_Action
 
         if(Crop_ID == -1) { return; }
 
+        Set_DB_User_PlantData(Obj_Index, Crop_ID);
+
         State = FARM_STATE.GROWING;
 
         SeedObj.SetActive(true);
@@ -72,6 +80,8 @@ public class Farm_Action : BulidingOBJ_Action
     }
     void Harvest_Crop()
     {
+        Set_DB_User_PlantData_NULL(Obj_Index);
+
         State = FARM_STATE.ROT;
 
         CropModelObj.SetActive(false);
@@ -91,8 +101,6 @@ public class Farm_Action : BulidingOBJ_Action
         RotObj.SetActive(false);
     }
 
-
-
     IEnumerator C_Grow_Time()
     {
         while(GrowTime > 0)
@@ -110,6 +118,75 @@ public class Farm_Action : BulidingOBJ_Action
         yield break;
     }
 
+    // 이하는 네트워크 관련 함수.
+
+    public void Set_DB_User_PlantData(int obj_index , int crop_id)
+    {
+        int index = GameManager.Get_Inctance().Get_UserIndex();
+
+        Dictionary<string, object> sendData = new Dictionary<string, object>();
+        sendData.Add("contents", "Set_User_PlantData");
+
+        sendData.Add("user_index", index);
+        sendData.Add("obj_index", obj_index);
+        sendData.Add("crop_id", crop_id);
+
+        StartCoroutine(NetworkManager.Instance.ProcessNetwork(sendData, Reply_Set_DB_User_PlantData));
+    }
+    void Reply_Set_DB_User_PlantData(string json)
+    {
+    }
+
+    public void Get_DB_User_PlantData(int obj_index)
+    {
+        int index = GameManager.Get_Inctance().Get_UserIndex();
+
+        Dictionary<string, object> sendData = new Dictionary<string, object>();
+        sendData.Add("contents", "Get_User_PlantData");
+
+        sendData.Add("user_index", index);
+        sendData.Add("obj_index", obj_index);
+
+        StartCoroutine(NetworkManager.Instance.ProcessNetwork(sendData, Reply_Get_DB_User_PlantData));
+    }
+    void Reply_Get_DB_User_PlantData(string json)
+    {
+        RecvPlantInfo data = JsonReader.Deserialize<RecvPlantInfo>(json);
+        Planted_Crop = CropsManager.Get_Inctance().Get_CropInfo(data.Crop_ID);
+
+        if (data.Check_Harvest)
+        {
+            CropModelObj.SetActive(true);
+            CropModelObj.transform.FindChild(Planted_Crop.Name).gameObject.SetActive(true);
+            State = FARM_STATE.MATURE;
+        }
+        else
+        {
+            GrowTime = data.Grow_Time;
+            SeedObj.SetActive(true);
+            State = FARM_STATE.GROWING;
+
+            StartCoroutine(C_Grow_Time());
+        }
+    }
+
+    public void Set_DB_User_PlantData_NULL(int obj_index)
+    {
+        int index = GameManager.Get_Inctance().Get_UserIndex();
+
+        Dictionary<string, object> sendData = new Dictionary<string, object>();
+        sendData.Add("contents", "Set_Farmming_Data_NULL");
+
+        sendData.Add("user_index", index);
+        sendData.Add("obj_index", obj_index);
+
+        StartCoroutine(NetworkManager.Instance.ProcessNetwork(sendData, Reply_Set_DB_User_PlantData_NULL));
+    }
+    void Reply_Set_DB_User_PlantData_NULL(string json)
+    {
+    }
+
+
     public enum FARM_STATE
     {
         NONE,           // 아무것도 하지 않음
@@ -118,3 +195,10 @@ public class Farm_Action : BulidingOBJ_Action
         ROT,              // 작물 썩음
     };
 }
+class RecvPlantInfo
+{
+    public int Crop_ID;
+    public float Grow_Time;
+    public bool Check_Harvest;
+}
+

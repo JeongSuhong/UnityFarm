@@ -34,6 +34,9 @@ public class Store_Item_Action : MonoBehaviour {
 
     public void Install_Item()
     {
+        if(Check_Install(Item_Info.Buliding_ID) == false) { return; }
+
+
         if (EventOBJ == null)
         {
             GameObject EventOBJ_Prefab = Resources.Load("Prefabs/EventOBJ/" + Item_Info.Model_Name) as GameObject;
@@ -66,4 +69,20 @@ public class Store_Item_Action : MonoBehaviour {
         Item_Install_UI_Action.Get_Inctance().View_Item_InstallUI(EventOBJ, Item_Info);
         GameManager.Get_Inctance().Install_Item(EventOBJ);
     }
+    bool Check_Install(int Buliding_ID)
+    {
+        if(Buliding_ID == (int)CHECK_OBJ.HOUSE)
+        {
+            return UserManager.Get_Inctance(). Check_Install_House();
+        }
+
+        return true;
+    }
+
+    enum CHECK_OBJ
+    {
+        FARM = 0,
+        HOUSE = 1,
+    }
+
 }

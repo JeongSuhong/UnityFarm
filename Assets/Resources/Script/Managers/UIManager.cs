@@ -169,6 +169,11 @@ public class UIManager : MonoBehaviour {
         MinusGold_UI.SetActive(true);
         MinusGold_UI.GetComponent<MinusGold_UI_Action>().Set_UI(gold);
     }
+    
+    public void Set_HouseCount_UI(int count, int max)
+    {
+        Label_House.text = count.ToString() +" / " + max.ToString();
+    }
 }
 public enum ITEM_UI_TYPE
 {
