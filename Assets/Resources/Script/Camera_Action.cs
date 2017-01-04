@@ -1,6 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+/*
+ *  카메라이동을 담당하는 스크립트.
+ *  드래그했을때 화면이 이동하는 부분을 처리함. 
+ */
+
 public class Camera_Action : MonoBehaviour
 {
     public bool Not_CameraMoving = false;

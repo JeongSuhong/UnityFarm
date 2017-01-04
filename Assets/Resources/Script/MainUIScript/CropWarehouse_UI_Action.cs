@@ -1,9 +1,15 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+/*
+ *  창고의 UI 스크립트.
+ *   Set_Crop_UI() : UserManager에게 작물의 갯수를 요청해 버튼으로 만드는 함수.  작물 갯수가 99개가 넘어가는 시점은 아직 만들지 않음
+ *   C_Check_View_Menu() : 창고가 등장할때 나오는 애니메이션코드
+ */
+
 public class CropWarehouse_UI_Action : Base_Button_Action {
 
-    public GameObject Crop_UI_Prefab;
+    public GameObject CropButton_UI_Prefab;                   
     public UITable Table_Crops;
 
     private static CropWarehouse_UI_Action instance = null;
@@ -61,7 +67,7 @@ public class CropWarehouse_UI_Action : Base_Button_Action {
 
         }
 
-        GameObject Crop_UI = Instantiate(Crop_UI_Prefab, Table_Crops.transform) as GameObject;
+        GameObject Crop_UI = Instantiate(CropButton_UI_Prefab, Table_Crops.transform) as GameObject;
         Crop_UI.transform.localScale = Vector3.one;
         Crop_UI.name = CropID.ToString();
 

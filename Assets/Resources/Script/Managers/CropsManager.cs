@@ -3,6 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using JsonFx.Json;
 
+/*
+ *   작물을 관리하는 스크립트.
+ *   Set_SelectCropUI() : 밭에 심을 작물선택창에 뜨는 작물버튼을 생성하는 함수.
+ */
 public class CropsManager : MonoBehaviour
 { 
     List<CropInfo> CropsInfo = new List<CropInfo>();
@@ -59,6 +63,10 @@ public class CropsManager : MonoBehaviour
 
         Grid_Select_Crops.repositionNow = true;
     }
+
+
+
+    // 이하는 네트워크 관련 함수
 
     public void Get_DB_CropInfo()
     {

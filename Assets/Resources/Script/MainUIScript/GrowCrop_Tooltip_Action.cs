@@ -1,6 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+/*
+ * 작물이 자라는 상태의 밭을 누르면 생성되는 작물 정보창
+ *  Get_GrowTime() : 작물 정보창 내의 GrowTime ( 밭에서 돌아가는 Timer와는 별개 )
+ */
+
 public class GrowCrop_Tooltip_Action : MonoBehaviour {
 
     public UISprite CropIcon;

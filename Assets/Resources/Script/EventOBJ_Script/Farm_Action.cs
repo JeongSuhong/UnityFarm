@@ -2,16 +2,28 @@
 using System.Collections;
 using JsonFx.Json;
 
+/*
+ * 밭 오브젝트가 사용하는 스크립트.
+ * Start_Action() : 클릭시 실행 -> Check_Action_Farm()실행
+ * Check_Action_Farm() : 밭의 상태를 판단해서 함수를 실행시킴
+ * Plant_Crop() : 심을 작물의 정보를 파악하고 심음
+ * Harvest_Crop() : 다 자란 작물을 수확하고 UserManager에게 수확작물정보 전달, 찌꺼기 오브젝트 생성
+ * Cleaning_Farm() : 찌꺼기 오브젝트 삭제, 밭 상태 초기화 
+ * C_Grow_Time() : 작물이 자라는 중에 돌아가는 코루틴. 다 자라면 수확가능상태로 변경
+ */
+
+
 public class Farm_Action : BulidingOBJ_Action
 {
-    public CropInfo Planted_Crop;
+    public CropInfo Planted_Crop;                           // 현재 밭에 심겨져 있는 작물의 정보
+    public FARM_STATE State = FARM_STATE.NONE;
+
     public GameObject CropModelObj;
     public GameObject RotObj;
     public GameObject SeedObj;
     public GameObject Harvest_Effect;
-    public FARM_STATE State = FARM_STATE.NONE;
 
-    public float GrowTime = 0;
+    public float GrowTime = 0;                          // 작물이 자라는 시간의 타이머
 
     public override void Start_Action()
     {

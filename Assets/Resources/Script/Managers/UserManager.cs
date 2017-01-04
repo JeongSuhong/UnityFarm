@@ -3,6 +3,18 @@ using System.Collections;
 using System.Collections.Generic;
 using JsonFx.Json;
 
+/*
+ *   유저와 관련된걸 관리하는 스크립트.
+ *    Obtain_Crop() : 작물을 획득했을때 호출. CropWarehouse_UI_Action의 UI호출.
+ *    Get_Crop_Count() : 해당 작물을 몇개나 소지하고 있는지 반환. 해당 작물을 소지하고 있지 않을경우 -99반환
+ *    Check_Obtain_Crop() : 해당 작물을 소유하고 있는지 아닌지 반환.
+ *    Sell_Crop() : 작물을 판매. 해당 작물의 count를 감소하고 골드를 얻음.
+ *    Increase_Gold() : 골드를 획득했을때 실행.
+ *    C_Increase_Gold() : 골드를 획득했을때 골드 Label 에 뜨는 코드애니메이션.
+ *    Increase_Jam() : Jam을 획득했을때 실행.
+ *    Buy_OBJ() : 아이템을 구매했을때 실행. 구매한 아이템의 정보를 바꿈.
+ */
+
 public class UserManager : MonoBehaviour {
 
     private Dictionary<int, int> CropInven = new Dictionary<int, int>();
@@ -38,13 +50,8 @@ public class UserManager : MonoBehaviour {
         instance = this;
 
         GameManager.Get_Inctance().Start_Update();
-    }
-    void Start()
-    {
         Get_DB_UserData();
-        Get_DB_Install_Buliding();
     }
-
     public void Obtain_Crop(int CropID, int count)
     {
         if (!CropInven.ContainsKey(CropID))
@@ -62,7 +69,7 @@ public class UserManager : MonoBehaviour {
     }
     public int Get_Crop_Count(int CropID)
     {
-        if(CropInven.ContainsKey(CropID))
+        if(Check_Obtain_Crop(CropID))
         {
             return CropInven[CropID];
         }
@@ -143,10 +150,24 @@ public class UserManager : MonoBehaviour {
         UIManager.Get_Inctance().Label_Jam.text = Jam.ToString();
     }
 
+    public void Buy_OBJ(GameObject Select_OBJ, Item Select_OBJ_Info)
+    {
+        GameObject obj = Instantiate(Select_OBJ, Select_OBJ.transform.position, Select_OBJ.transform.rotation) as GameObject;
+        obj.name = Select_OBJ.name;
+        Destroy(obj.GetComponent<Rigidbody>());
+        BulidingOBJ_Action obj_action = obj.GetComponent<BulidingOBJ_Action>();
+
+        obj_action.Is_SaveItem = true;
+        obj_action.Is_Install = true;
+        obj_action.Info = Select_OBJ_Info;
+        Get_Buliding_Action = obj_action;
+
+        Increase_Gold(-obj_action.Info.Price);
+        Set_DB_Install_Buliding(obj_action, obj);
+    }
 
 
-
-   private BulidingOBJ_Action Get_Buliding_Action;
+    private BulidingOBJ_Action Get_Buliding_Action;
 
 
     /////// Network //////
@@ -196,7 +217,9 @@ public class UserManager : MonoBehaviour {
         sendData.Add("rot_x", obj.transform.rotation.eulerAngles.x);
         sendData.Add("rot_y", obj.transform.rotation.eulerAngles.y);
         sendData.Add("rot_z", obj.transform.rotation.eulerAngles.z);
-        sendData.Add("check_install", buliding_action.Info.Check_Install);
+        sendData.Add("check_install", buliding_action.Check_Is_Install);
+
+        Get_Buliding_Action = buliding_action;
 
 
         StartCoroutine(NetworkManager.Instance.ProcessNetwork(sendData, Reply_Set_DB_Install_Buliding));
@@ -205,13 +228,11 @@ public class UserManager : MonoBehaviour {
     {
         int obj_index = JsonReader.Deserialize<int>(json);
 
-        if(Get_Buliding_Action != null)
-        {
-            Get_Buliding_Action.Info.Obj_Index = obj_index;
-        }
+        Get_Buliding_Action.Obj_Index = obj_index;
+        Get_Buliding_Action.Install_Action();
     }
 
-    void Get_DB_Install_Buliding()
+    public void Get_DB_Install_Buliding()
     {
         int index = GameManager.Get_Inctance().Get_UserIndex();
 

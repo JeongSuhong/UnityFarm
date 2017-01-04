@@ -1,16 +1,24 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+/*
+ *  작물 판매 UI의 스크립트.
+ *  Set_Sell_Crop_UI() : 판매창의 작물 정보를 나타냄.
+ *  Set_Sell_Crop_Count_Slider() : 판매 작물의 갯수를 조종하는 슬라이더에 관한 함수.
+ *  Set_OneIncrease_Crop_Count() , Set_OneDecrease_Crop_Count() : 판매 작물 갯수를 +1, -1 할수 있는 함수.
+ *  Sell_Crop() : 작물을 판매하는 함수. UserManager의 Sell_Crop()을 호출.
+ *   
+ */
 public class Sell_Crop_UI_Action : MonoBehaviour {
 
     int CropID;
-    int Crop_Obtain_Count;
+    int Crop_Obtain_Count;                         // User가 소유하고 있는 판매작물의 갯수
     public UISprite Crop_Icon;
     public UILabel Crop_Name;
     public UILabel Label_Count;
     public UISlider Crop_Count_Slider;
     
-   public int Count = 0;
+   public int Count = 0;                                // 작물을 몇개나 판매할 것인가?
    public float Slider_Count_Value = 0f;
 
     private static Sell_Crop_UI_Action instance = null;

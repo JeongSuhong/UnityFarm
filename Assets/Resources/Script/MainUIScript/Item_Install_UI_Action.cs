@@ -1,6 +1,15 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+/*
+ *  아이템을 설치할때 샘플 오브젝트와 함께 뜨는 버튼들을 관리하는 UI스크립트
+ *  C_View_Item_InstallUI()으로 샘플 오브젝트를 따라다닌다. 
+ *  Check_OBJState() : 샘플 오브젝트가 해당 자리에 설치 가능한지를 판단하는 스크립트.
+ *  Set_Base_Button_UI() : 모든 버튼을 사용가능한 상태로 만듬.
+ *  Buy_OBJ() : 구매버튼을 누르면 실행. UserManager에 있는 Buy_OBJ()를 호출.
+ */
+
+
 public class Item_Install_UI_Action : MonoBehaviour {
     
     enum BUTTON_TYPE
@@ -122,23 +131,8 @@ public class Item_Install_UI_Action : MonoBehaviour {
 
     public void Buy_OBJ()
     {
-        GameObject obj = Instantiate(Select_OBJ, Select_OBJ.transform.position, Select_OBJ.transform.rotation) as GameObject;
-        obj.name = Select_OBJ.name;
-        Destroy( obj.GetComponent<Rigidbody>() );
-        BulidingOBJ_Action obj_action = obj.GetComponent<BulidingOBJ_Action>();
-
-        obj_action.Is_SaveItem = true;
-        obj_action.Is_Install = true;
-        obj_action.Info = Select_OBJ_Info;
-        obj_action.Info.Check_Install = true;
-
-        obj_action.Install_Action();
-
-        UserManager.Get_Inctance().Increase_Gold(-obj_action.Info.Price);
-        UserManager.Get_Inctance().Set_DB_Install_Buliding(obj_action, obj);
-
+        UserManager.Get_Inctance().Buy_OBJ(Select_OBJ, Select_OBJ_Info);
         NotView_Item_InstallUI();
-
     }
     public void Rotation_OBJ()
     {

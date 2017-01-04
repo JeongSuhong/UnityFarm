@@ -1,6 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+/*
+ *  밭에 심는 작물선택창의 스크립트. 
+ *  Select_Crop() : 클릭한 버튼의 작물ID를 받아와 저장후  Select_Farm_Action 스크립트의 Select_Farm()를 실행시킴
+ *  Set_SelectCrop_Nothing() : Select_Crop_ID를 -1로 초기화시킨다.
+ */
 public class Select_Crops_Manager : MonoBehaviour {
 
     public int Select_Crop_ID = 0;

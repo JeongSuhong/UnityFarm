@@ -1,6 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+/*
+ *  아이템을 얻었을시 ( 작물과 다름 ) 생성되는 아이템아이콘 UI의 스크립트.
+ *    Set_Awake() : 아이템의 정보를 받아 Object에 반영하고 C_Update()를 호출한다.
+ */
+
 public class Get_Item_MiniUI_Action : MonoBehaviour {
 
     public bool Is_Playing = false;

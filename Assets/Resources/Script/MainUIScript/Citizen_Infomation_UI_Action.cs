@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+// House를 Click시 뜨는 시민 정보 UI에 대한 스크립트.
+
 public class Citizen_Infomation_UI_Action : MonoBehaviour {
 
     public UILabel Label_Name;

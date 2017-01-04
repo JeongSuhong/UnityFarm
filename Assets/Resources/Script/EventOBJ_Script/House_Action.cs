@@ -2,30 +2,34 @@
 using System.Collections;
 using System.Collections.Generic;
 
+/*
+ * 집 오브젝트가 사용하는 스크립트
+ * Start_Action() : 집에 해당하는 시민의 정보창을 보이게함
+ * Install_Action() : 집에 해당하는 시민을 CitizenManager에게 생성 요청 
+ * Set_Sleep_UI(), Set_Sleep_Gauge() : 시민이 자고있을때 뜨는 Sleep 표시
+ */
+
+
 public class House_Action : BulidingOBJ_Action
 {
     public GameObject Sleep_Effect;
-
     GameObject Sleep_Gauge;
-    List<GameObject> Drop_Item_Icons = new List<GameObject>();
 
     public override void Start_Action()
     {
-        if (CitizenManager.Get_Inctance().Check_Set_House(Info.Obj_Index) == null)
+        if (CitizenManager.Get_Inctance().Check_Set_House(Obj_Index) == null)
         {
             Debug.Log("citizen Error!!! ");
             return;
         }
 
-        Citizen_Info citizen = CitizenManager.Get_Inctance().Check_Set_House(Info.Obj_Index);
-
-        Debug.Log(Info.Obj_Index);
+        Citizen_Info citizen = CitizenManager.Get_Inctance().Check_Set_House(Obj_Index);
 
         Citizen_Infomation_UI_Action.Get_Inctance().View_Window(citizen);
     }
     public override void Install_Action()
     {
-        Citizen_Info Citizen = CitizenManager.Get_Inctance().Check_Set_House(Info.Obj_Index);
+        Citizen_Info Citizen = CitizenManager.Get_Inctance().Check_Set_House(Obj_Index);
 
         if (Citizen != null)
         {

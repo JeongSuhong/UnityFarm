@@ -1,6 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+/*
+ * 시민이 집에서 잠들면 뜨는 Sleep Gauge의 스크립트. 
+ */
+
 public class House_Sleep_Gauge_Action : MonoBehaviour {
 
     public UISlider Gauge;

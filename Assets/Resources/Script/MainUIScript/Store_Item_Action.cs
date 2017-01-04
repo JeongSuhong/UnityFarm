@@ -1,6 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+/*
+ *  상점에 뜨는 Item버튼의 스크립트 
+ *  Install_Item() : Item버튼을 클릭하면 실행. 클릭한 Item의 샘플 오브젝트를 만들고 창을 닫음.
+ */
+
 public class Store_Item_Action : MonoBehaviour {
 
     Item Item_Info;

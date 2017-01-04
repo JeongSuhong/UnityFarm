@@ -3,10 +3,22 @@ using System.Collections;
 using System.Collections.Generic;
 using JsonFx.Json;
 
+/*
+ *  시민의 행동이나 정보를 관리하는 스크립트.
+ *   Set_House() : 시민의 House를 매개변수로 받은 house로 바꿈.
+ *   Set_Model() : 시민의 모델을 활성화시키고 변수에 저장.
+ *   Set_Active(), C_Set_Active() : 시민의 AI를 활성화.
+ *   C_Walk() : 시민의 상태가 WALK일때 실행, 자기 집 근처를 랜덤하게 돌아다님.
+ *   C_Talk() : 시민의 외로움이 MAX이고 다른 시민과 충돌했을때 실행. 대화 애니메이션을 일정 시간동안 플레이.
+ *   C_Resting() : 시민의 피로도가 MAX일때 실행, 할당된 집으로 돌아가 피로도가 0이 될때까지 모델 비활성화됨.
+ *   C_Farmming() : 시민의 상태가 NONE이고 밭과 충돌할때 실행, 밭에서 랜덤하게 아이템 획득.
+ *   Check_Event() : EventOBJ와 충돌했을때 해당 OBJ에 관한 Event가 가능한지 체크 후 상태 변환.
+ */
 public class Citizen_Action : Citizen_Variable {
 
     public void Set_House(GameObject house)
     {
+        Info.Home_Index = house.GetComponent<BulidingOBJ_Action>().Obj_Index;
         Select_House = house;
     }
     public int Set_Model()
@@ -270,32 +282,4 @@ public class Citizen_Action : Citizen_Variable {
             Check_Event(col.gameObject.name);
         }
     }
-
-    public void Set_DB_User_CitizenData()
-    {
-        Dictionary<string, object> sendData = new Dictionary<string, object>();
-        sendData.Add("contents", "Set_User_CitizensData");
-
-        sendData.Add("user_index", GameManager.Get_Inctance().Get_UserIndex());
-        sendData.Add("citizen_type", (int)Info.Type);
-
-        sendData.Add("model_type", Info.Model_Index);
-        sendData.Add("level", Info.Level);
-        sendData.Add("max_hp", Info.Max_HP);
-        sendData.Add("hp", Info.HP);
-        sendData.Add("max_tiredness", Info.Max_Tiredness);
-        sendData.Add("tiredness", Info.Tiredness);
-        sendData.Add("charm", Info.Charm);
-        sendData.Add("exp", Info.Exp);
-        sendData.Add("home_index", Info.Home_Index);
-
-        StartCoroutine(NetworkManager.Instance.ProcessNetwork(sendData, Reply_Set_DB_User_CitizenData));
-    }
-    private void Reply_Set_DB_User_CitizenData(string json)
-    {
-        int Citizen_Id = JsonReader.Deserialize<int>(json);
-
-        Info.id = Citizen_Id;
-    }
-
 }

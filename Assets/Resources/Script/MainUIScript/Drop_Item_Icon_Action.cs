@@ -1,9 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+// 아이템을 획득했을때 생성 및 연출되는 아이템 아이콘의 스크립트.
+// 목적지가 있는 아이템 아이콘이 사용한다.
+
 public class Drop_Item_Icon_Action : MonoBehaviour
 {
-    public Vector3 Target;
+    public Vector3 Target;                              // 아이템 아이콘이 도착하는 목적지
     public UISprite Icon;
     public bool Is_Playing = false;
 

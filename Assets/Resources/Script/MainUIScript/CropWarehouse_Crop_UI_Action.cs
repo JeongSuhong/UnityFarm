@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+// 작물창고에 생성되는 작물버튼의 스크립트.
+
 public class CropWarehouse_Crop_UI_Action : MonoBehaviour {
 
     int CropID;

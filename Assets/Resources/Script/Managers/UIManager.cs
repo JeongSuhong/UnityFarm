@@ -2,6 +2,12 @@
 using System.Collections;
 using System.Collections.Generic;
 
+/*
+ *  메인 UI에 관련된 스크립트. 
+ *  Set_Drop_Item_Icon() : 작물 얻었을때나 아이템 획득했을때 아이콘을 만들고 관리.
+ *  Create_Drop_Item_Icon() : 위 함수의 아이콘을 만듬.
+ *  Set_MinusGold_UI() : 골드감소 아이콘을 만듬.
+ */
 public class UIManager : MonoBehaviour {
 
     public GameObject UIRoot;
@@ -59,8 +65,6 @@ public class UIManager : MonoBehaviour {
         GrowCrop_Tooltip.GetComponent<GrowCrop_Tooltip_Action>().View_Tooltip(info, farm);
     }
 
-    // 작물 얻었을때나 아이템 획득했을때 아이콘 만드는 함수.
-    // 아이콘이 처음 위치해야할 OBJ 랑 SpriteName을 매개변수로 받는다.
     public void Set_Drop_Item_Icon(GameObject callOBJ, string sprite_name)
     {
         // 비활성화하고 있는 Icon을 담는 변수.

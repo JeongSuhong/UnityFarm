@@ -1,6 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+/*
+ *  물건을 구매했을때 골드창 아래에 뜨는 골드감소 UI 스크립트. 
+ */
 public class MinusGold_UI_Action : MonoBehaviour {
 
     public UILabel Label_Gold;

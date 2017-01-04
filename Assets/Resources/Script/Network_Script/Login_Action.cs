@@ -5,6 +5,10 @@ using UnityEngine.SceneManagement;
 using JsonFx.Json;
 using System;
 
+/*
+ *  로그인 화면을 담당하는 스크립트. 
+ * 
+ */
 public class Login_Action : MonoBehaviour {
    
     public UIInput Login_ID;

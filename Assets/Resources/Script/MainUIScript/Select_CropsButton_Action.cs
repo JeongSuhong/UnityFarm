@@ -1,6 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+/*
+ *  밭에 심을 작물창에 뜨는 작물버튼의 스크립트. 
+ */
 public class Select_CropsButton_Action : Base_Button_Action
 {
     int Crop_ID;

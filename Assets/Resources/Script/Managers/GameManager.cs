@@ -1,9 +1,18 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+/*
+ *   게임조작이나 전반적인 환경을 관리하는 스크립트.
+ *    C_Update() : 화면을 드래그하면 해당 곳으로 이동할 수 있음. 
+ *    C_Plant_Drag_Farm() : 화면을 드래그했을시 밭에 작물을 심는 함수를 호출. ( 화면 이동 x ) 
+      C_Install_Item() : 화면을 클릭 & 드래그 했을 시 샘플 오브젝트를 해당한 곳으로 이동 ( 화면 이동 x )
+      Set_BasicSetting() : 모든 코루틴을 종료하고 C_Update()를 호출
+      Set_Text_Time() : Time을 "시간 분 초"이 표기된 string값으로 변환해 반환.
+      Set_Message() : 오류 메세지를 표시하는 함수.
+ */
 public class GameManager : MonoBehaviour
 {
-    private int User_Index;
+    private int User_Index;                                     // 게임을 플레이하고있는 User의 Index
 
     public bool Is_ViewUI = false;
     private static GameManager instance = null;

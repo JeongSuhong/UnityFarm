@@ -2,13 +2,23 @@
 using System.Collections;
 using System.Collections.Generic;
 using JsonFx.Json;
+using System.Text;
 
+/*
+ *   상점과 아이템을 관리하는 스크립트.    
+ *   Create_Store_Item_UI() : 상점에 나타나는 아이템버튼을 생성.
+ *   Create_Install_OBJ() : 아이템 오브젝트를 생성.
+ *   Get_ItemInfo() : 매개변수로 받은 아이템ID에 해당하는 아이템의 정보를 반환. 없으면 null 반환.
+ *                         
+ *    
+ */
 public class StoreManager : MonoBehaviour
 {
     private List<Item> ItemInfo = new List<Item>();
 
     public GameObject Store_Item_UI_Prefab;
     public UIGrid Grid_Items;
+
 
     private static StoreManager instance = null;
 
@@ -31,9 +41,8 @@ public class StoreManager : MonoBehaviour
 
     void Awake()
     {
-        Get_DB_ItemInfo();
-
         instance = this;
+        Get_DB_ItemInfo();
     }
 
     void Create_Store_Item_UI(Item item_info)
@@ -51,8 +60,6 @@ public class StoreManager : MonoBehaviour
     {
         Item Item_Info = Get_ItemInfo(buliding_id);
 
-        Debug.Log(Item_Info.Obj_Index);
-
         if (Item_Info == null) { return; }
 
         GameObject EventOBJ_Prefab = Resources.Load("Prefabs/EventOBJ/" + Item_Info.Model_Name) as GameObject;
@@ -68,8 +75,7 @@ public class StoreManager : MonoBehaviour
         Destroy(obj.GetComponent<Rigidbody>());
         obj.transform.Rotate(rot);
         obj.GetComponent<BulidingOBJ_Action>().Info = Item_Info;
-        obj.GetComponent<BulidingOBJ_Action>().Set_Info_ObjIndex(obj_index);
-
+        obj.GetComponent<BulidingOBJ_Action>().Obj_Index = obj_index;
         obj.GetComponent<BulidingOBJ_Action>().Install_Action();
 
     }
@@ -99,6 +105,8 @@ public class StoreManager : MonoBehaviour
 
 
 
+    // 이하는 네트워크 관련 함수
+
     public void Get_DB_ItemInfo()
     {
         Dictionary<string, object> sendData = new Dictionary<string, object>();
@@ -118,6 +126,8 @@ public class StoreManager : MonoBehaviour
             ItemInfo.Add(data);
             Create_Store_Item_UI(data);
         }
+
+        UserManager.Get_Inctance().Get_DB_Install_Buliding();
     }
 
 }
@@ -137,8 +147,5 @@ public class Item
     public int Price;
     public int Buff_Happy;
 
-    public int Obj_Index = -1;
-
-    public bool Check_Install;
 }
 

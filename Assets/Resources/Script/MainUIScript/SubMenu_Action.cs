@@ -1,6 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+/*
+ *  메인 화면 오른쪽에 있는 SubMenu의 스크립트. 
+    C_Check_View_Menu() : SubMenu의 버튼을 누를때 나타나는 애니메이션코드. 
+*/
 public class SubMenu_Action : MonoBehaviour {
 
     bool Is_Viewing = false;
