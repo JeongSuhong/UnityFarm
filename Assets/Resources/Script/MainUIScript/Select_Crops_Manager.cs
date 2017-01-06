@@ -53,7 +53,6 @@ public class Select_Crops_Manager : MonoBehaviour {
     public void View_SelectCrops_UI()
     {
         Select_Crop_ID = -1;
-        Camera_Action.Get_Inctance().Set_CameraMoving();
         GetComponent<UIPanel>().alpha = 1;
     }
     public void NotView_SelectCrops_UI()

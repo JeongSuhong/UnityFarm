@@ -48,6 +48,7 @@ public class StoreManager : MonoBehaviour
     void Create_Store_Item_UI(Item item_info)
     {
         GameObject ItemUI = Instantiate(Store_Item_UI_Prefab, Grid_Items.transform) as GameObject;
+        ItemUI.name = item_info.Buliding_ID.ToString();
         ItemUI.transform.localScale = Vector3.one;
         ItemUI.name = item_info.Name.ToString();
 
@@ -103,6 +104,15 @@ public class StoreManager : MonoBehaviour
         GameManager.Get_Inctance().Set_NotViewUI();
     }
 
+    public void Update_Item_Limit_UI(int buliding_id)
+    {
+        string name = Get_ItemInfo(buliding_id).Name;
+        GameObject obj = Grid_Items.transform.FindChild(name).gameObject;
+
+        if(obj == null) { return; }
+
+        obj.GetComponent<Store_Item_Action>().Check_Limit(buliding_id);
+    }
 
 
     // 이하는 네트워크 관련 함수
@@ -129,7 +139,6 @@ public class StoreManager : MonoBehaviour
 
         UserManager.Get_Inctance().Get_DB_Install_Buliding();
     }
-
 }
 public enum ITEM_TYPE
 {

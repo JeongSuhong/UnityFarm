@@ -12,7 +12,7 @@ public class GrowCrop_Tooltip_Action : MonoBehaviour {
     public UILabel CropName;
     public UILabel GrowTime;
 
-    public void View_Tooltip(CropInfo info, Farm_Action farm)
+    public void View_Tooltip(CropInfo info,  Farm_Action farm)
     {
         Camera_Action.Get_Inctance().Set_NotCameraMoving();
 
@@ -27,13 +27,11 @@ public class GrowCrop_Tooltip_Action : MonoBehaviour {
 
     IEnumerator Get_GrowTime(Farm_Action farm)
     {
-        float growtime = farm.GrowTime;
-
-        while(growtime > 0)
+        float grow_time = farm.GrowTime;
+        while(grow_time > 0)
         {
-            growtime = farm.GrowTime;
-
-            GrowTime.text = GameManager.Get_Inctance().Set_Text_Time((int)growtime); ;
+            grow_time = farm.GrowTime;
+            GrowTime.text = GameManager.Get_Inctance().Set_Text_Time((int)grow_time);
 
             yield return null;
         }
@@ -44,6 +42,7 @@ public class GrowCrop_Tooltip_Action : MonoBehaviour {
     public void NotView_Tooltip()
     {
         GetComponent<UIPanel>().alpha = 0;
+        StopAllCoroutines();
         GameManager.Get_Inctance().Set_BasicSetting();
     }
 }

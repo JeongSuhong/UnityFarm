@@ -33,6 +33,7 @@ public class Farm_Action : BulidingOBJ_Action
     }
     public override void Install_Action()
     {
+        UserManager.Get_Inctance().Increase_Farm_Count();
         Get_DB_User_PlantData(Obj_Index);
     }
 
@@ -85,11 +86,11 @@ public class Farm_Action : BulidingOBJ_Action
         State = FARM_STATE.ROT;
 
         CropModelObj.SetActive(false);
-        CropModelObj.transform.FindChild(Planted_Crop.Name).gameObject.SetActive(false);
+        CropModelObj.transform.FindChild(Planted_Crop.Sprite_Name).gameObject.SetActive(false);
         RotObj.SetActive(true);
         Harvest_Effect.SetActive(true);
 
-        UserManager.Get_Inctance().Obtain_Crop(Planted_Crop.ID, 1);
+        UserManager.Get_Inctance().Obtain_Crop(Planted_Crop.ID, 1, Planted_Crop.Get_Exp);
 
         UIManager.Get_Inctance().Set_Drop_Item_Icon(gameObject, Planted_Crop.Sprite_Name);
 
@@ -105,7 +106,7 @@ public class Farm_Action : BulidingOBJ_Action
     {
         while(GrowTime > 0)
         {
-            GrowTime -= Time.deltaTime;
+            GrowTime -= Time.unscaledDeltaTime;
 
             yield return null;
         }
@@ -113,7 +114,7 @@ public class Farm_Action : BulidingOBJ_Action
         State = FARM_STATE.MATURE;
         SeedObj.SetActive(false);
         CropModelObj.SetActive(true);
-        CropModelObj.transform.FindChild(Planted_Crop.Name).gameObject.SetActive(true);
+        CropModelObj.transform.FindChild(Planted_Crop.Sprite_Name).gameObject.SetActive(true);
 
         yield break;
     }
@@ -157,7 +158,7 @@ public class Farm_Action : BulidingOBJ_Action
         if (data.Check_Harvest)
         {
             CropModelObj.SetActive(true);
-            CropModelObj.transform.FindChild(Planted_Crop.Name).gameObject.SetActive(true);
+            CropModelObj.transform.FindChild(Planted_Crop.Sprite_Name).gameObject.SetActive(true);
             State = FARM_STATE.MATURE;
         }
         else

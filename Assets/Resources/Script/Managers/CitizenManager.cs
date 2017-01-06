@@ -43,7 +43,7 @@ public class CitizenManager : MonoBehaviour
 
     public void Create_Citizen(GameObject house)
     {
-        int Citizen_Id = Random.Range(0, Citizen_Infos.Count - 1);
+        int Citizen_Id = Random.Range(1, Citizen_Infos.Count);
         Citizen_Info info = Citizen_Infos[Citizen_Id];
 
         GameObject citizen = Instantiate(Citizen_Prefab, this.gameObject.transform) as GameObject;
@@ -162,10 +162,13 @@ public class CitizenManager : MonoBehaviour
         sendData.Add("exp", Info.Exp);
         sendData.Add("home_index", Info.Home_Index);
 
-        StartCoroutine(NetworkManager.Instance.ProcessNetwork(sendData, Reply_Set_DB_User_CitizenData));
+        StartCoroutine(NetworkManager.Instance.ProcessNetwork(sendData, Reply_Data_Null));
     }
-    private void Reply_Set_DB_User_CitizenData(string json)
+
+
+    void Reply_Data_Null(string json)
     {
+
     }
 }
 public class Citizen_Info

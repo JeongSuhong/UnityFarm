@@ -20,7 +20,7 @@ public class UserManager : MonoBehaviour {
     private Dictionary<int, int> CropInven = new Dictionary<int, int>();
     private Dictionary<int, int> ItemInven = new Dictionary<int, int>();
 
-    private int Level;
+    public int Level;
     private float Exp;
     private int Gold = 1000;
     private int Jam = 100;
@@ -50,12 +50,12 @@ public class UserManager : MonoBehaviour {
 
     void Awake()
     {
-        instance = this;
-
-        GameManager.Get_Inctance().Start_Update();
         Get_DB_UserData();
+        GameManager.Get_Inctance().Start_Update();
+
+        instance = this;
     }
-    public void Obtain_Crop(int CropID, int count)
+    public void Obtain_Crop(int CropID, int count, int crop_exp)
     {
         if (!CropInven.ContainsKey(CropID))
         {
@@ -67,6 +67,7 @@ public class UserManager : MonoBehaviour {
         }
 
         CropWarehouse_UI_Action.Get_Inctance().Set_Crop_UI(CropID);
+        Increase_EXP(crop_exp);
 
 
     }
@@ -173,6 +174,7 @@ public class UserManager : MonoBehaviour {
     {
         House_Count++;
         UIManager.Get_Inctance().Set_HouseCount_UI(House_Count, Max_House);
+        StoreManager.Get_Inctance().Update_Item_Limit_UI((int)LIMIT_CHECK_OBJ.HOUSE);
     }
     public bool Check_Install_House()
     {
@@ -182,6 +184,26 @@ public class UserManager : MonoBehaviour {
         }
 
         return true;
+    }
+
+    public void Increase_Farm_Count()
+    {
+        Farm_Count++;
+        StoreManager.Get_Inctance().Update_Item_Limit_UI((int)LIMIT_CHECK_OBJ.FARM);
+    }
+    public bool Check_Install_Farm()
+    {
+        if (Farm_Count >= Max_Farm)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    public void Increase_EXP(int value)
+    {
+        Update_DB_UserExp(value);
     }
 
     private BulidingOBJ_Action Get_Buliding_Action;
@@ -206,15 +228,15 @@ public class UserManager : MonoBehaviour {
         RecvUserData data = JsonReader.Deserialize<RecvUserData>(json);
 
         Level = data.Level;
-        UIManager.Get_Inctance().Label_Level.text = Level.ToString();
         Exp = data.Exp;
-        UIManager.Get_Inctance().Slider_Exp.value = Exp;
         Gold = data.Gold;
-        UIManager.Get_Inctance().Label_Gold.text = Gold.ToString();
         Jam = data.Jam;
-        UIManager.Get_Inctance().Label_Jam.text = Jam.ToString();
         Max_House = data.Max_House;
-        UIManager.Get_Inctance().Set_HouseCount_UI(House_Count, Max_House);
+        Max_Farm = data.Max_Farm;
+
+        UIManager.Get_Inctance().Set_UserInfo(data);
+        
+
     }
 
     public void Set_DB_Install_Buliding(BulidingOBJ_Action buliding_action, GameObject obj)
@@ -276,14 +298,29 @@ public class UserManager : MonoBehaviour {
         }
     }
 
-    private class RecvUserData
+    public void Update_DB_UserExp(int value)
     {
-        public int Level;
-        public float Exp;
-        public int Gold;
-        public int Jam;
-        public int Max_House;
+        int index = GameManager.Get_Inctance().Get_UserIndex();
+
+        Dictionary<string, object> sendData = new Dictionary<string, object>();
+        sendData.Add("contents", "Update_User_Exp");
+
+        sendData.Add("user_index", index);
+        sendData.Add("value", value);
+
+        StartCoroutine(NetworkManager.Instance.ProcessNetwork(sendData, Reply_Update_DB_UserExp));
     }
+   void Reply_Update_DB_UserExp(string json)
+    {
+        int[] data = (int[])JsonReader.Deserialize(json, typeof(int[]));
+
+        Level = data[0];
+        Exp = data[1];
+
+        UIManager.Get_Inctance().Set_ExpGrid(Exp / (Level * 100f));
+        UIManager.Get_Inctance().Set_Level(Level);
+    }
+
     private class RecvInstallObjData
     {
         public int Obj_Index;
@@ -296,4 +333,13 @@ public class UserManager : MonoBehaviour {
         public float Rot_z;
         public bool Check_Install;
     }
+}
+public class RecvUserData
+{
+    public int Level;
+    public float Exp;
+    public int Gold;
+    public int Jam;
+    public int Max_House;
+    public int Max_Farm;
 }

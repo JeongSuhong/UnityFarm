@@ -64,6 +64,17 @@ public class CropsManager : MonoBehaviour
         Grid_Select_Crops.repositionNow = true;
     }
 
+    public void Check_LevelLimit_CropButton()
+    {
+        Select_CropsButton_Action[] buttons = Grid_Select_Crops.gameObject.GetComponentsInChildren<Select_CropsButton_Action>();
+
+        Debug.Log(buttons.Length);
+
+        for(int i = 0; i < buttons.Length; i++)
+        {
+            buttons[i].Set_Level();
+        }
+    }
 
 
     // 이하는 네트워크 관련 함수
@@ -86,6 +97,8 @@ public class CropsManager : MonoBehaviour
             CropsInfo.Add(data);
             Set_SelectCropUI(data);
         }
+
+        CropsManager.Get_Inctance().Check_LevelLimit_CropButton();
     }
 }
 public class CropInfo
@@ -97,4 +110,6 @@ public class CropInfo
     public int Grow_Time;
     public int Selling_Price;
     public int Price;
+    public int Get_Exp;
+    public int Level;
 }

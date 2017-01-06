@@ -32,7 +32,7 @@ public class UIManager : MonoBehaviour {
     public GameObject Get_Item_Mini_Icon_Prefab;
     List<GameObject> Get_Item_Mini_Icons = new List<GameObject>();
 
-
+    public GameObject LevelUp_UI = null;
 
     private static UIManager instance = null;
 
@@ -58,6 +58,15 @@ public class UIManager : MonoBehaviour {
     void Awake()
     {
         instance = this;
+    }
+
+    public void Set_UserInfo(RecvUserData info)
+    {
+        Label_Level.text = info.Level.ToString();
+        Slider_Exp.value = info.Exp / ( 100 * info.Level );
+        Label_Gold.text = info.Gold.ToString();
+        Label_Jam.text = info.Jam.ToString();
+        Set_HouseCount_UI(UserManager.Get_Inctance().House_Count, info.Max_House);
     }
 
     public void View_GrowCrop_Tooltip(CropInfo info, Farm_Action farm)
@@ -173,6 +182,22 @@ public class UIManager : MonoBehaviour {
     public void Set_HouseCount_UI(int count, int max)
     {
         Label_House.text = count.ToString() +" / " + max.ToString();
+    }
+
+    public void Set_ExpGrid(float value)
+    {
+        Slider_Exp.value = value;
+    }
+    public void Set_Level(int value)
+    {
+        if(value != int.Parse(Label_Level.text))
+        {
+            LevelUp_UI.SetActive(true);
+            LevelUp_UI.GetComponent<LevelUP_UI_Action>().Set_Action(value);
+            CropsManager.Get_Inctance().Check_LevelLimit_CropButton();
+        }
+
+        Label_Level.text = value.ToString();
     }
 }
 public enum ITEM_UI_TYPE

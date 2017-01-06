@@ -14,8 +14,11 @@ public class Store_Item_Action : MonoBehaviour {
     public UILabel Item_Name;
     public UISprite Item_Icon;
     public UILabel Label_Gold;
-    public UILabel Label_Happy;
+    public GameObject Effects;
+    public GameObject Limit;
 
+    readonly int[] LIMIT_BASIC = new int[3]{ 255, 153, 0 };
+    readonly int[] LIMIT_LIMIT = new int[3] { 255, 0, 0 };
 
     public void Set_Item_Info(Item item_info)
     {
@@ -24,12 +27,8 @@ public class Store_Item_Action : MonoBehaviour {
         Item_Name.text = Item_Info.Name;
         Item_Icon.spriteName = Item_Info.Sprite_Name;
         Label_Gold.text = Item_Info.Price.ToString();
-        Label_Happy.text = Item_Info.Buff_Happy.ToString();
 
-        if (Item_Info.Buff_Happy == 0)
-        {
-            Label_Happy.gameObject.SetActive(false);
-        }
+        Check_Limit(Item_Info.Buliding_ID);
     }
 
     public void Install_Item()
@@ -71,18 +70,81 @@ public class Store_Item_Action : MonoBehaviour {
     }
     bool Check_Install(int Buliding_ID)
     {
-        if(Buliding_ID == (int)CHECK_OBJ.HOUSE)
+        switch((LIMIT_CHECK_OBJ)Buliding_ID)
         {
-            return UserManager.Get_Inctance(). Check_Install_House();
+            case LIMIT_CHECK_OBJ.HOUSE:
+                {
+                    return UserManager.Get_Inctance().Check_Install_House();
+                }
+
+            case LIMIT_CHECK_OBJ.FARM:
+                {
+                    return UserManager.Get_Inctance().Check_Install_Farm();
+                }
+
+            default:
+                return true;
         }
-
-        return true;
     }
-
-    enum CHECK_OBJ
+    public void Check_Limit(int Buliding_ID)
     {
-        FARM = 0,
-        HOUSE = 1,
+        switch ((LIMIT_CHECK_OBJ)Buliding_ID)
+        {
+            case LIMIT_CHECK_OBJ.HOUSE:
+                {
+                    int house_count = UserManager.Get_Inctance().House_Count;
+                    int max_count = UserManager.Get_Inctance().Max_House;
+                    Limit.SetActive(true);
+                    string text = string.Format("{0} / {1}", house_count, max_count);
+                    Limit.GetComponent<UILabel>().text = text;
+
+                    if(house_count >= max_count)
+                    {
+                        Limit.GetComponent<UILabel>().color = new Color(LIMIT_LIMIT[0], LIMIT_LIMIT[1], LIMIT_LIMIT[2]);
+                    }
+                    else
+                    {
+                        Limit.GetComponent<UILabel>().color = new Color(LIMIT_BASIC[0], LIMIT_BASIC[1], LIMIT_BASIC[2]);
+                    }
+
+                    break;
+                }
+            case LIMIT_CHECK_OBJ.FARM:
+                {
+                    int farm_count = UserManager.Get_Inctance().Farm_Count;
+                    int max_farm = UserManager.Get_Inctance().Max_Farm;
+
+                    Limit.SetActive(true);
+                    string text = string.Format("{0} / {1}", farm_count, max_farm);
+                    Limit.GetComponent<UILabel>().text = text;
+
+                    if (farm_count >= max_farm)
+                    {
+                        Limit.GetComponent<UILabel>().color = new Color(LIMIT_LIMIT[0], LIMIT_LIMIT[1], LIMIT_LIMIT[2]);
+                    }
+                    else
+                    {
+                        Limit.GetComponent<UILabel>().color = new Color(LIMIT_BASIC[0], LIMIT_BASIC[1], LIMIT_BASIC[2]);
+                    }
+
+                    break;
+                }
+
+            default:
+                break;
+                
+        }
     }
 
+    enum EFFECTS
+    {
+        HAPPY = 0,
+        MAX,
+    }
+
+}
+public enum LIMIT_CHECK_OBJ
+{
+    FARM = 0,
+    HOUSE = 1,
 }

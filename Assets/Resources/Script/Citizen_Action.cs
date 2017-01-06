@@ -213,8 +213,10 @@ public class Citizen_Action : Citizen_Variable {
 
         Set_Effect(CITIZEN_EFFECT.GET_ITEM);
 
-        UserManager.Get_Inctance().Obtain_Crop(0, 1);
+
+        UserManager.Get_Inctance().Obtain_Crop(0, 1, 0);
         // test Leaf
+
         UIManager.Get_Inctance().Set_Get_Item_Icon(gameObject, "leaf", 1, ITEM_UI_TYPE.CROP);
 
         Increase_Tiredness(-10);
