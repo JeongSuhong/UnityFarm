@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine.SceneManagement;
 using JsonFx.Json;
 using System;
 
@@ -42,17 +41,7 @@ public class Login_Action : MonoBehaviour {
 
         GameManager.Get_Inctance().Set_UserIndex(index);
         // 회원 가입에 성공 했으므로 바로 로그인을 시도한다.
-        StartCoroutine(Login());
-    }
-    IEnumerator Login()
-    {
-        AsyncOperation async = SceneManager.LoadSceneAsync("Main");
-
-        while (!async.isDone)
-        {
-            yield return null;
-        }
-        yield return null;
+        GameManager.Get_Inctance().Start_Login();
     }
 
     public void Set_Join()

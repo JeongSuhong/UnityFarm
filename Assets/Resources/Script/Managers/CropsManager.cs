@@ -36,7 +36,6 @@ public class CropsManager : MonoBehaviour
     void Awake()
     {
         instance = this;
-        Get_DB_CropInfo();
     }
 
     public CropInfo Get_CropInfo(int find_id)
@@ -68,8 +67,6 @@ public class CropsManager : MonoBehaviour
     {
         Select_CropsButton_Action[] buttons = Grid_Select_Crops.gameObject.GetComponentsInChildren<Select_CropsButton_Action>();
 
-        Debug.Log(buttons.Length);
-
         for(int i = 0; i < buttons.Length; i++)
         {
             buttons[i].Set_Level();
@@ -79,12 +76,12 @@ public class CropsManager : MonoBehaviour
 
     // 이하는 네트워크 관련 함수
 
-    public void Get_DB_CropInfo()
+    public IEnumerator Get_DB_CropInfo()
     {
         Dictionary<string, object> sendData = new Dictionary<string, object>();
         sendData.Add("contents", "Get_CropInfo");
 
-        StartCoroutine(NetworkManager.Instance.ProcessNetwork(sendData, Reply_DB_CropInfo));
+        yield return StartCoroutine(NetworkManager.Instance.ProcessNetwork(sendData, Reply_DB_CropInfo));
     }
     public void Reply_DB_CropInfo(string json)
     {

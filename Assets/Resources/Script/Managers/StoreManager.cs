@@ -42,7 +42,7 @@ public class StoreManager : MonoBehaviour
     void Awake()
     {
         instance = this;
-        Get_DB_ItemInfo();
+
     }
 
     void Create_Store_Item_UI(Item item_info)
@@ -117,12 +117,12 @@ public class StoreManager : MonoBehaviour
 
     // 이하는 네트워크 관련 함수
 
-    public void Get_DB_ItemInfo()
+    public IEnumerator Get_DB_ItemInfo()
     {
         Dictionary<string, object> sendData = new Dictionary<string, object>();
         sendData.Add("contents", "Get_ItemInfo");
 
-        StartCoroutine(NetworkManager.Instance.ProcessNetwork(sendData, Reply_DB_ItemInfo));
+       yield return StartCoroutine(NetworkManager.Instance.ProcessNetwork(sendData, Reply_DB_ItemInfo));
     }
     public void Reply_DB_ItemInfo(string json)
     {
@@ -136,8 +136,6 @@ public class StoreManager : MonoBehaviour
             ItemInfo.Add(data);
             Create_Store_Item_UI(data);
         }
-
-        UserManager.Get_Inctance().Get_DB_Install_Buliding();
     }
 }
 public enum ITEM_TYPE

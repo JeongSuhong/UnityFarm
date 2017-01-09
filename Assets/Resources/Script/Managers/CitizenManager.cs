@@ -37,8 +37,6 @@ public class CitizenManager : MonoBehaviour
     void Awake()
     {
         instance = this;
-        Get_DB_CitizenInfo();
-        Get_DB_User_CitizenData();
     }
 
     public void Create_Citizen(GameObject house)
@@ -105,12 +103,12 @@ public class CitizenManager : MonoBehaviour
 
     // 이하는 네트워크 관련 함수.
 
-    private void Get_DB_CitizenInfo()
+    public IEnumerator Get_DB_CitizenInfo()
     {
         Dictionary<string, object> sendData = new Dictionary<string, object>();
         sendData.Add("contents", "Get_CitizenInfo");
 
-        StartCoroutine(NetworkManager.Instance.ProcessNetwork(sendData, Reply_Get_DB_CitizenInfo));
+        yield return StartCoroutine(NetworkManager.Instance.ProcessNetwork(sendData, Reply_Get_DB_CitizenInfo));
     }
     private void Reply_Get_DB_CitizenInfo(string json)
     {
@@ -123,14 +121,14 @@ public class CitizenManager : MonoBehaviour
         }
     }
 
-    private void Get_DB_User_CitizenData()
+    public IEnumerator Get_DB_User_CitizenData()
     {
         Dictionary<string, object> sendData = new Dictionary<string, object>();
         sendData.Add("contents", "Get_User_CitizenData");
 
         sendData.Add("user_index", GameManager.Get_Inctance().Get_UserIndex());
 
-        StartCoroutine(NetworkManager.Instance.ProcessNetwork(sendData, Reply_Get_DB_User_CitizenData));
+        yield return StartCoroutine(NetworkManager.Instance.ProcessNetwork(sendData, Reply_Get_DB_User_CitizenData));
     }
     private void Reply_Get_DB_User_CitizenData(string json)
     {

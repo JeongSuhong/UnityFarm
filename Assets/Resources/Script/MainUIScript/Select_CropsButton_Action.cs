@@ -39,15 +39,16 @@ public class Select_CropsButton_Action : Base_Button_Action
     {
         float level = CropsManager.Get_Inctance().Get_CropInfo(Crop_ID).Level;
 
-        if (level > UserManager.Get_Inctance().Level)
+        if (level <= UserManager.Get_Inctance().Level)
         {
-            NotLevel_Crop.SetActive(true);
-            NotLevel_Crop.GetComponentInChildren<UILabel>().text = "Lv. " + level.ToString();
+            NotLevel_Crop.SetActive(false);
         }
     }
 
     public void Select_Crop()
     {
+        if(NotLevel_Crop.activeSelf) { return;  }
+
         Select_Crops_Manager.Get_Inctance().Select_Crop(Crop_ID);
     }
 

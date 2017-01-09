@@ -50,25 +50,13 @@ public class UserManager : MonoBehaviour {
 
     void Awake()
     {
-        Get_DB_UserData();
-        GameManager.Get_Inctance().Start_Update();
-
         instance = this;
     }
     public void Obtain_Crop(int CropID, int count, int crop_exp)
     {
-        if (!CropInven.ContainsKey(CropID))
-        {
-            CropInven.Add(CropID, count);
-        }
-        else
-        {
-            CropInven[CropID] += count;
-        }
+        Set_DB_Crop_Data(CropID, count);
 
-        CropWarehouse_UI_Action.Get_Inctance().Set_Crop_UI(CropID);
         Increase_EXP(crop_exp);
-
 
     }
     public int Get_Crop_Count(int CropID)
@@ -211,7 +199,7 @@ public class UserManager : MonoBehaviour {
 
     /////// Network //////
 
-    void Get_DB_UserData()
+    public IEnumerator Get_DB_UserData()
     {
         int index = GameManager.Get_Inctance().Get_UserIndex();
        
@@ -220,7 +208,7 @@ public class UserManager : MonoBehaviour {
 
         sendData.Add("user_index", index);
 
-        StartCoroutine(NetworkManager.Instance.ProcessNetwork(sendData, Reply_Get_DB_UserData));
+        yield return StartCoroutine(NetworkManager.Instance.ProcessNetwork(sendData, Reply_Get_DB_UserData));
     }
     void Reply_Get_DB_UserData(string json)
     {
@@ -237,6 +225,34 @@ public class UserManager : MonoBehaviour {
         UIManager.Get_Inctance().Set_UserInfo(data);
         
 
+    }
+
+    public IEnumerator Get_DB_Install_Buliding()
+    {
+        int index = GameManager.Get_Inctance().Get_UserIndex();
+
+        Dictionary<string, object> sendData = new Dictionary<string, object>();
+        sendData.Add("contents", "Get_User_InstallOBJData");
+
+        sendData.Add("user_index", index);
+
+        yield return StartCoroutine(NetworkManager.Instance.ProcessNetwork(sendData, Reply_Get_DB_Install_Buliding));
+    }
+    void Reply_Get_DB_Install_Buliding(string json)
+    {
+        Dictionary<string, object> dataDic = (Dictionary<string, object>)JsonReader.Deserialize(json, typeof(Dictionary<string, object>));
+
+        foreach (KeyValuePair<string, object> info in dataDic)
+        {
+            RecvInstallObjData data = JsonReader.Deserialize<RecvInstallObjData>(JsonWriter.Serialize(info.Value));
+            Vector3 Pos = new Vector3(data.Pos_x, data.Pos_y, data.Pos_z);
+            Vector3 Rot = new Vector3(data.Rot_x, data.Rot_y, data.Rot_z);
+
+            if (data.Check_Install)
+            {
+                StoreManager.Get_Inctance().Create_Install_OBJ(data.Obj_Index, data.Buliding_ID, Pos, Rot);
+            }
+        }
     }
 
     public void Set_DB_Install_Buliding(BulidingOBJ_Action buliding_action, GameObject obj)
@@ -270,34 +286,6 @@ public class UserManager : MonoBehaviour {
         Get_Buliding_Action.Install_Action();
     }
 
-    public void Get_DB_Install_Buliding()
-    {
-        int index = GameManager.Get_Inctance().Get_UserIndex();
-
-        Dictionary<string, object> sendData = new Dictionary<string, object>();
-        sendData.Add("contents", "Get_User_InstallOBJData");
-
-        sendData.Add("user_index", index);
-
-        StartCoroutine(NetworkManager.Instance.ProcessNetwork(sendData, Reply_Get_DB_Install_Buliding));
-    }
-    void Reply_Get_DB_Install_Buliding(string json)
-    {
-        Dictionary<string, object> dataDic = (Dictionary<string, object>)JsonReader.Deserialize(json, typeof(Dictionary<string, object>));
-
-        foreach (KeyValuePair<string, object> info in dataDic)
-        {
-            RecvInstallObjData data = JsonReader.Deserialize<RecvInstallObjData>(JsonWriter.Serialize(info.Value));
-            Vector3 Pos = new Vector3(data.Pos_x, data.Pos_y, data.Pos_z);
-            Vector3 Rot = new Vector3(data.Rot_x, data.Rot_y, data.Rot_z);
-
-            if (data.Check_Install)
-            {
-                StoreManager.Get_Inctance().Create_Install_OBJ(data.Obj_Index, data.Buliding_ID, Pos, Rot);
-            }
-        }
-    }
-
     public void Update_DB_UserExp(int value)
     {
         int index = GameManager.Get_Inctance().Get_UserIndex();
@@ -310,7 +298,7 @@ public class UserManager : MonoBehaviour {
 
         StartCoroutine(NetworkManager.Instance.ProcessNetwork(sendData, Reply_Update_DB_UserExp));
     }
-   void Reply_Update_DB_UserExp(string json)
+    void Reply_Update_DB_UserExp(string json)
     {
         int[] data = (int[])JsonReader.Deserialize(json, typeof(int[]));
 
@@ -319,6 +307,60 @@ public class UserManager : MonoBehaviour {
 
         UIManager.Get_Inctance().Set_ExpGrid(Exp / (Level * 100f));
         UIManager.Get_Inctance().Set_Level(Level);
+    }
+
+    void Set_DB_Crop_Data(int crop_id, int count)
+    {
+        int index = GameManager.Get_Inctance().Get_UserIndex();
+  
+        Dictionary<string, object> sendData = new Dictionary<string, object>();
+        sendData.Add("contents", "Set_User_Crop_Data");
+
+        sendData.Add("user_index", index);
+        sendData.Add("crop_id", crop_id);
+        sendData.Add("count", count);
+
+        StartCoroutine(NetworkManager.Instance.ProcessNetwork(sendData, Reply_Set_DB_Crop_Data));
+    }
+    void Reply_Set_DB_Crop_Data(string json)
+    {
+        RecvUserCropData data = (RecvUserCropData)JsonReader.Deserialize(json, typeof(RecvUserCropData));
+
+        if (!CropInven.ContainsKey(data.Crop_ID))
+        {
+            CropInven.Add(data.Crop_ID, data.Crop_Count);
+        }
+        else
+        {
+            CropInven[data.Crop_ID] = data.Crop_Count;
+        }
+
+        CropWarehouse_UI_Action.Get_Inctance().Set_Crop_UI(data.Crop_ID);
+    }
+
+    public IEnumerator Get_DB_Crop_Data()
+    {
+        int index = GameManager.Get_Inctance().Get_UserIndex();
+
+        Dictionary<string, object> sendData = new Dictionary<string, object>();
+        sendData.Add("contents", "Get_User_Crop_Data");
+
+        sendData.Add("user_index", index);
+
+        yield return StartCoroutine(NetworkManager.Instance.ProcessNetwork(sendData, Reply_Get_DB_Crop_Data));
+    } 
+    void Reply_Get_DB_Crop_Data(string json)
+    {
+        Dictionary<string, object> dataDic = (Dictionary<string, object>)JsonReader.Deserialize(json, typeof(Dictionary<string, object>));
+
+        foreach (KeyValuePair<string, object> info in dataDic)
+        {
+            RecvUserCropData data = JsonReader.Deserialize<RecvUserCropData>(JsonWriter.Serialize(info.Value));
+
+            CropInven.Add(data.Crop_ID, data.Crop_Count);
+
+            CropWarehouse_UI_Action.Get_Inctance().Set_Crop_UI(data.Crop_ID);
+        }
     }
 
     private class RecvInstallObjData
@@ -332,6 +374,11 @@ public class UserManager : MonoBehaviour {
         public float Rot_y;
         public float Rot_z;
         public bool Check_Install;
+    }
+    private class RecvUserCropData
+    {
+        public int Crop_ID;
+        public int Crop_Count;
     }
 }
 public class RecvUserData

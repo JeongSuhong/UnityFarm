@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 /*
  *   게임조작이나 전반적인 환경을 관리하는 스크립트.
@@ -15,6 +16,9 @@ public class GameManager : MonoBehaviour
     private int User_Index;                                     // 게임을 플레이하고있는 User의 Index
 
     public bool Is_ViewUI = false;
+
+    public bool Check_LoadData = false;
+
     private static GameManager instance = null;
 
     public static GameManager Get_Inctance()
@@ -40,12 +44,44 @@ public class GameManager : MonoBehaviour
         DontDestroyOnLoad(this);
     }
 
-    public void Start_Update()
+    public void Start_Login()
     {
+        StartCoroutine(Login());
+    }
+    IEnumerator Login()
+    {
+        AsyncOperation async = SceneManager.LoadSceneAsync("Main");
+
+        while (!async.isDone)
+        {
+            yield return null;
+        }
+
+        StartCoroutine(C_Awake());
+    }
+
+
+    IEnumerator C_Awake()
+    {
+
+        // 데이터 사전 로드
+        yield return StartCoroutine(UserManager.Get_Inctance().Get_DB_UserData());
+        yield return StartCoroutine(StoreManager.Get_Inctance().Get_DB_ItemInfo());
+        yield return StartCoroutine(CitizenManager.Get_Inctance().Get_DB_CitizenInfo());
+
+        // 게임에 반영할 데이터 로드
+        yield return StartCoroutine(CitizenManager.Get_Inctance().Get_DB_User_CitizenData());
+        yield return StartCoroutine(CropsManager.Get_Inctance().Get_DB_CropInfo());                     // User Level Data  필요
+        yield return StartCoroutine(UserManager.Get_Inctance().Get_DB_Crop_Data());                     // CropInfo 필요
+        yield return StartCoroutine(UserManager.Get_Inctance().Get_DB_Install_Buliding());              // 여러 Info 필요. 되도록 맨 나중에.   
+
+        // 게임 시작
+        Check_LoadData = true;
         StartCoroutine(C_Update());
     }
     IEnumerator C_Update()
     {
+
         while (true)
         {
             if (Is_ViewUI) { yield return null; continue; }

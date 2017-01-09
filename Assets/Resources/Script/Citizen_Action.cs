@@ -213,8 +213,9 @@ public class Citizen_Action : Citizen_Variable {
 
         Set_Effect(CITIZEN_EFFECT.GET_ITEM);
 
+        CropInfo get_crop = CropsManager.Get_Inctance().Get_CropInfo(2);
 
-        UserManager.Get_Inctance().Obtain_Crop(0, 1, 0);
+        UserManager.Get_Inctance().Obtain_Crop(get_crop.ID, 1, 0);
         // test Leaf
 
         UIManager.Get_Inctance().Set_Get_Item_Icon(gameObject, "leaf", 1, ITEM_UI_TYPE.CROP);
