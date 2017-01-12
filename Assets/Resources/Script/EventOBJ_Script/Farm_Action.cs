@@ -33,6 +33,8 @@ public class Farm_Action : BulidingOBJ_Action
     }
     public override void Install_Action()
     {
+        Origin_Position = transform.localPosition;
+
         UserManager.Get_Inctance().Increase_Farm_Count();
         Get_DB_User_PlantData(Obj_Index);
     }
@@ -62,10 +64,11 @@ public class Farm_Action : BulidingOBJ_Action
         if(State != FARM_STATE.NONE) { return; }
 
         int Crop_ID = Select_Crops_Manager.Get_Inctance().Select_Crop_ID;
+        int Crop_Price = CropsManager.Get_Inctance().Get_CropInfo(Crop_ID).Price;
 
         if(Crop_ID == -1) { return; }
 
-        Set_DB_User_PlantData(Obj_Index, Crop_ID);
+        Set_DB_User_PlantData(Obj_Index, Crop_ID, Crop_Price, UserManager.Get_Inctance().Get_Gold());
 
         State = FARM_STATE.GROWING;
 
@@ -73,8 +76,6 @@ public class Farm_Action : BulidingOBJ_Action
 
         Planted_Crop = CropsManager.Get_Inctance().Get_CropInfo(Crop_ID);
         GrowTime = Planted_Crop.Grow_Time;
-
-        UserManager.Get_Inctance().Increase_Gold(-Planted_Crop.Price);
 
         StartCoroutine(C_Grow_Time());
 
@@ -121,7 +122,7 @@ public class Farm_Action : BulidingOBJ_Action
 
     // 이하는 네트워크 관련 함수.
 
-    public void Set_DB_User_PlantData(int obj_index , int crop_id)
+    public void Set_DB_User_PlantData(int obj_index , int crop_id, int crop_price, int gold)
     {
         int index = GameManager.Get_Inctance().Get_UserIndex();
 
@@ -136,6 +137,9 @@ public class Farm_Action : BulidingOBJ_Action
     }
     void Reply_Set_DB_User_PlantData(string json)
     {
+        int gold = JsonReader.Deserialize<int>(json);
+
+        UserManager.Get_Inctance().Set_Gold(gold);
     }
 
     public void Get_DB_User_PlantData(int obj_index)

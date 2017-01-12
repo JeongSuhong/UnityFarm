@@ -129,9 +129,10 @@ public class Item_Install_UI_Action : MonoBehaviour {
         GameManager.Get_Inctance().Set_BasicSetting();
     }
 
-    public void Buy_OBJ()
+    public void Install_OBJ()
     {
-        UserManager.Get_Inctance().Buy_OBJ(Select_OBJ, Select_OBJ_Info);
+        BulidingOBJ_Action action = Select_OBJ.GetComponent<BulidingOBJ_Action>();
+        UserManager.Get_Inctance().Set_DB_Install_Buliding(action, Select_OBJ);
         NotView_Item_InstallUI();
     }
     public void Rotation_OBJ()

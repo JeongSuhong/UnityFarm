@@ -247,4 +247,9 @@ public class GameManager : MonoBehaviour
     {
         return User_Index;
     }
+
+    public void Set_Notic(string text)
+    {
+        Notic_Action.Get_Inctance().Set_Notic(text);
+    }
 }

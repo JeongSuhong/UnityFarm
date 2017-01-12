@@ -14,15 +14,17 @@ public class BulidingOBJ_Action : MonoBehaviour {
 
     public int Obj_Index;
 
+    public bool Check_Buy_Item = false;
     public bool Is_Install = false;
-
+    public Vector3 Origin_Position = Vector3.zero;
+    
     public virtual void Start_Action()
     {
 
     }
     public virtual void Install_Action()
     {
-
+        Origin_Position = transform.localPosition;
     }
 
     void OnEnable()

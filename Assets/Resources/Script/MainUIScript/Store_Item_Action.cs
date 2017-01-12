@@ -53,7 +53,7 @@ public class Store_Item_Action : MonoBehaviour {
 
         EventOBJ.SetActive(true);
 
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        Ray ray = Camera.main.ScreenPointToRay(Camera_Action.Get_Inctance().transform.position);
         RaycastHit hit;
         // Physics.Raycast(쏜 레이 정보, 충돌 정보, 거리)
         //  => 충돌이 되면 true를 리턴하면서 충돌 정보를 확인 할 수 있다.

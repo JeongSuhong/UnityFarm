@@ -37,6 +37,10 @@ public class Select_Crops_Manager : MonoBehaviour {
 
     public void Select_Crop(int crop_id)
     {
+        int gold = CropsManager.Get_Inctance().Get_CropInfo(crop_id).Price;
+
+        if(gold > UserManager.Get_Inctance().Get_Gold()){ return; }
+
         Select_Crop_ID = crop_id;
         string Crop_SpriteName = CropsManager.Get_Inctance().Get_CropInfo(crop_id).Sprite_Name;
 
@@ -54,10 +58,12 @@ public class Select_Crops_Manager : MonoBehaviour {
     {
         Select_Crop_ID = -1;
         GetComponent<UIPanel>().alpha = 1;
+        GameManager.Get_Inctance().Set_ViewUI();
     }
     public void NotView_SelectCrops_UI()
     {
         GetComponent<UIPanel>().alpha = 0;
+        GameManager.Get_Inctance().Set_NotViewUI();
     }
 
 }

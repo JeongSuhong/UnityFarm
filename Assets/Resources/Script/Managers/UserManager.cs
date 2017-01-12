@@ -21,9 +21,9 @@ public class UserManager : MonoBehaviour {
     private Dictionary<int, int> ItemInven = new Dictionary<int, int>();
 
     public int Level;
-    private float Exp;
+    public float Exp;
     private int Gold = 1000;
-    private int Jam = 100;
+    public int Jam = 100;
     public int Max_House;
     public int House_Count;
     public int Max_Farm;
@@ -97,26 +97,26 @@ public class UserManager : MonoBehaviour {
 
         CropWarehouse_UI_Action.Get_Inctance().Set_Crop_UI(crop_id);
 
-        Increase_Gold(sell_value);
+        Set_Gold(Gold + sell_value);
 
 
     }
 
-    public void Increase_Gold(int value)
+    public void Set_Gold(int value)
     {
-        Gold += value;
-
-        if (value < 0)
+        if (value < Gold)
         {
-            UIManager.Get_Inctance().Set_MinusGold_UI(value);
-            UIManager.Get_Inctance().Label_Gold.text = Gold.ToString();
+            UIManager.Get_Inctance().Set_MinusGold_UI(Gold - value);
+            UIManager.Get_Inctance().Label_Gold.text = value.ToString();
         }
         else
         {
-            StartCoroutine(C_Increase_Gold(value));
+            StartCoroutine(C_Set_Gold(value));
         }
+
+        Gold = value;
     }
-    IEnumerator C_Increase_Gold(int value)
+    IEnumerator C_Set_Gold(int value)
     {
         float text_gold = 0;
         while (true)
@@ -136,13 +136,18 @@ public class UserManager : MonoBehaviour {
 
         }
     }
+    public int Get_Gold()
+    {
+        return Gold;
+    }
+
     public void Increase_Jam(int value)
     {
         Jam += value;
         UIManager.Get_Inctance().Label_Jam.text = Jam.ToString();
     }
 
-    public void Buy_OBJ(GameObject Select_OBJ, Item Select_OBJ_Info)
+    public void Install_OBJ(GameObject Select_OBJ)
     {
         GameObject obj = Instantiate(Select_OBJ, Select_OBJ.transform.position, Select_OBJ.transform.rotation) as GameObject;
         obj.name = Select_OBJ.name;
@@ -151,11 +156,10 @@ public class UserManager : MonoBehaviour {
 
         obj_action.Is_SaveItem = true;
         obj_action.Is_Install = true;
-        obj_action.Info = Select_OBJ_Info;
-        Get_Buliding_Action = obj_action;
+        obj_action.Check_Buy_Item = true;
+        obj_action.Info = Select_OBJ.GetComponent<BulidingOBJ_Action>().Info;
 
-        Increase_Gold(-obj_action.Info.Price);
-        Set_DB_Install_Buliding(obj_action, obj);
+        obj_action.Install_Action();
     }
 
     public void Increase_House_Count()
@@ -193,9 +197,6 @@ public class UserManager : MonoBehaviour {
     {
         Update_DB_UserExp(value);
     }
-
-    private BulidingOBJ_Action Get_Buliding_Action;
-
 
     /////// Network //////
 
@@ -255,10 +256,11 @@ public class UserManager : MonoBehaviour {
         }
     }
 
+    private GameObject Get_Buliding_OBJ; // 아래 코드에서 쓰는 매개변수 ( Reply로 매개변수 보내는 방법을 모르겟다 )
     public void Set_DB_Install_Buliding(BulidingOBJ_Action buliding_action, GameObject obj)
     {
         int index = GameManager.Get_Inctance().Get_UserIndex();
-        Get_Buliding_Action = buliding_action;
+        Get_Buliding_OBJ = obj;
 
         Dictionary<string, object> sendData = new Dictionary<string, object>();
         sendData.Add("contents", "Set_User_InstallOBJData");
@@ -272,18 +274,22 @@ public class UserManager : MonoBehaviour {
         sendData.Add("rot_y", obj.transform.rotation.eulerAngles.y);
         sendData.Add("rot_z", obj.transform.rotation.eulerAngles.z);
         sendData.Add("check_install", buliding_action.Check_Is_Install);
-
-        Get_Buliding_Action = buliding_action;
-
+        sendData.Add("check_buy", buliding_action.Check_Buy_Item);
 
         StartCoroutine(NetworkManager.Instance.ProcessNetwork(sendData, Reply_Set_DB_Install_Buliding));
     }
     void Reply_Set_DB_Install_Buliding(string json)
     {
-        int obj_index = JsonReader.Deserialize<int>(json);
+        Dictionary<string, int> data = (Dictionary < string, int> )JsonReader.Deserialize<Dictionary<string, int>>(json);
 
-        Get_Buliding_Action.Obj_Index = obj_index;
-        Get_Buliding_Action.Install_Action();
+        // 구매에 성공했을때
+        if (data["user_gold"] != Gold)
+        {
+            Get_Buliding_OBJ.GetComponent<BulidingOBJ_Action>().Obj_Index = data["obj_index"];
+            Install_OBJ(Get_Buliding_OBJ);
+        }
+
+        Set_Gold(data["user_gold"]);
     }
 
     public void Update_DB_UserExp(int value)
