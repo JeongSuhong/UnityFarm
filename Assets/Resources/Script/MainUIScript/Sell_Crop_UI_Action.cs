@@ -17,6 +17,7 @@ public class Sell_Crop_UI_Action : MonoBehaviour {
     public UILabel Crop_Name;
     public UILabel Label_Count;
     public UISlider Crop_Count_Slider;
+    public UILabel Label_Price;
     
    public int Count = 0;                                // 작물을 몇개나 판매할 것인가?
    public float Slider_Count_Value = 0f;
@@ -53,11 +54,13 @@ public class Sell_Crop_UI_Action : MonoBehaviour {
         Crop_Obtain_Count = UserManager.Get_Inctance().Get_Crop_Count(CropID);
 
         Label_Count.text = Count.ToString();
+        Label_Price.text = "0";
 
         Slider_Count_Value = Mathf.Round((1f / Crop_Obtain_Count) * 10000f);
         Slider_Count_Value /= 10000f;
 
         GetComponent<UIPanel>().alpha = 1;
+        GameManager.Get_Inctance().Set_ViewUI();
     }
 
     public void Set_Sell_Crop_Count_Slider()
@@ -78,6 +81,7 @@ public class Sell_Crop_UI_Action : MonoBehaviour {
         }
 
         Label_Count.text = Count.ToString();
+        Set_Price();
     }
     public void Set_OneIncrease_Crop_Count()
     {
@@ -94,6 +98,8 @@ public class Sell_Crop_UI_Action : MonoBehaviour {
         {
             Crop_Count_Slider.value = Count * Slider_Count_Value;
         }
+
+        Set_Price();
     }
     public void Set_OneDecrease_Crop_Count()
     {
@@ -103,10 +109,22 @@ public class Sell_Crop_UI_Action : MonoBehaviour {
         Label_Count.text = Count.ToString();
 
         Crop_Count_Slider.value = Count * Slider_Count_Value;
+        Set_Price();
+    }
+    public void Set_Price()
+    {
+        if(Count == 0)
+        {
+            Label_Price.text = "0";
+            return;
+        }
+
+        int price = Count * CropsManager.Get_Inctance().Get_CropInfo(CropID).Selling_Price;
+        Label_Price.text = price.ToString();
     }
     public void Sell_Crop()
     {
-        UserManager.Get_Inctance().Sell_Crop(Count, CropID);
+        UserManager.Get_Inctance().Set_DB_Sell_Crop(CropID, Count);
         NotView_Window();
     }
     public void NotView_Window()
@@ -119,5 +137,6 @@ public class Sell_Crop_UI_Action : MonoBehaviour {
         Crop_Name.text = "";
 
         GetComponent<UIPanel>().alpha = 0f;
+        GameManager.Get_Inctance().Set_NotViewUI();
     }
 }

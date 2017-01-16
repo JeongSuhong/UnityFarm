@@ -51,11 +51,11 @@ public class Item_Install_UI_Action : MonoBehaviour {
         instance = this;
     }
 
-    public void View_Item_InstallUI(GameObject obj , Item item_info)
+    public void View_Item_InstallUI(GameObject obj)
     {
         GetComponent<UIPanel>().alpha = 1f;
         Select_OBJ = obj;
-        Select_OBJ_Info = item_info;
+        Select_OBJ_Info = Select_OBJ.GetComponent<BulidingOBJ_Action>().Info;
         StartCoroutine(C_View_Item_InstallUI());
     }
     IEnumerator C_View_Item_InstallUI()
@@ -116,23 +116,34 @@ public class Item_Install_UI_Action : MonoBehaviour {
         }
     }
 
+    public void Cancel_Install()
+    {
+        // 산 아이템이 아니면 취소 버튼을 누를때 없어지게 한다.
+        if (!Select_OBJ.GetComponent<BulidingOBJ_Action>().Check_Buy_Item)
+        {
+            Select_OBJ.SetActive(false);
+        }
+        else
+        {
+            Select_OBJ.transform.position = Select_OBJ.GetComponent<BulidingOBJ_Action>().Origin_Position;
+        }
+
+        NotView_Item_InstallUI();
+    }
     public void NotView_Item_InstallUI()
     {
         GetComponent<UIPanel>().alpha = 0f;
         Set_Base_Button_UI();
         StopCoroutine("C_View_Item_InstallUI");
-
-        Select_OBJ.transform.rotation = Quaternion.identity;
-
-        Select_OBJ.SetActive(false);
-
         GameManager.Get_Inctance().Set_BasicSetting();
     }
 
     public void Install_OBJ()
     {
         BulidingOBJ_Action action = Select_OBJ.GetComponent<BulidingOBJ_Action>();
+
         UserManager.Get_Inctance().Set_DB_Install_Buliding(action, Select_OBJ);
+
         NotView_Item_InstallUI();
     }
     public void Rotation_OBJ()

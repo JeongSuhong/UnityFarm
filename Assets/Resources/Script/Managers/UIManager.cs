@@ -34,6 +34,8 @@ public class UIManager : MonoBehaviour {
 
     public GameObject LevelUp_UI = null;
 
+    public GameObject Clicking_UI = null;
+
     private static UIManager instance = null;
 
     public static UIManager Get_Inctance()
@@ -198,6 +200,20 @@ public class UIManager : MonoBehaviour {
         }
 
         Label_Level.text = value.ToString();
+    }
+
+    public void View_Clicking(Vector3 pos)
+    {
+        Clicking_UI.transform.position = pos;
+        Clicking_UI.GetComponent<UIPanel>().alpha = 1f;
+    }
+    public void Set_Clicking_UI(float value, GameObject obj)
+    {
+        Clicking_UI.GetComponentInChildren<UISlider>().value = value;
+    }
+    public void NotView_Clicking()
+    {
+        Clicking_UI.GetComponent<UIPanel>().alpha = 0;
     }
 }
 public enum ITEM_UI_TYPE

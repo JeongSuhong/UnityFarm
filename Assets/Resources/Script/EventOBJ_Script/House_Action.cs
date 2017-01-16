@@ -31,8 +31,6 @@ public class House_Action : BulidingOBJ_Action
     {
         Origin_Position = transform.localPosition;
 
-        UserManager.Get_Inctance().Increase_House_Count();
-
         Citizen_Info Citizen = CitizenManager.Get_Inctance().Check_Set_House(Obj_Index);
 
         if (Citizen != null)

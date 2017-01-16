@@ -35,7 +35,6 @@ public class Farm_Action : BulidingOBJ_Action
     {
         Origin_Position = transform.localPosition;
 
-        UserManager.Get_Inctance().Increase_Farm_Count();
         Get_DB_User_PlantData(Obj_Index);
     }
 
@@ -167,7 +166,7 @@ public class Farm_Action : BulidingOBJ_Action
         }
         else
         {
-            GrowTime = data.Grow_Time;
+            GrowTime = Planted_Crop.Grow_Time - data.Grow_Time;
             SeedObj.SetActive(true);
             State = FARM_STATE.GROWING;
 

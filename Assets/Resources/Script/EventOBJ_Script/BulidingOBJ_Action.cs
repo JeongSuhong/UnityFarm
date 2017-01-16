@@ -12,7 +12,7 @@ public class BulidingOBJ_Action : MonoBehaviour {
 
     public Item Info = new Item();
 
-    public int Obj_Index;
+    public int Obj_Index = -99;
 
     public bool Check_Buy_Item = false;
     public bool Is_Install = false;
@@ -51,5 +51,14 @@ public class BulidingOBJ_Action : MonoBehaviour {
         {
             Check_Is_Install = true;
         }
+    }
+
+    public void Set_Buy()
+    {
+        Check_Buy_Item = true;
+    }
+    public void Set_Install()
+    {
+        Is_Install = true;
     }
 }

@@ -10,9 +10,11 @@ public class Inventory_UI_Action : MonoBehaviour {
     public void View_InventoryUI()
     {
         GetComponent<UIPanel>().alpha = 1;
+        GameManager.Get_Inctance().Set_ViewUI();
     }
     public void NotView_InventoryUI()
     {
         GetComponent<UIPanel>().alpha = 0;
+        GameManager.Get_Inctance().Set_NotViewUI();
     }
 }

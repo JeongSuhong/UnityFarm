@@ -17,11 +17,14 @@ public class LevelUP_UI_Action : MonoBehaviour {
         }
 
         Time.timeScale = 0;
+        GameManager.Get_Inctance().Set_ViewUI();
     }
     public void NotView_Window()
     {
         gameObject.SetActive(false);
 
         Time.timeScale = 1;
+
+        GameManager.Get_Inctance().Set_NotViewUI();
     }
 }

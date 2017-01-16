@@ -75,9 +75,13 @@ public class StoreManager : MonoBehaviour
         obj.name = EventOBJ_Prefab.name;
         Destroy(obj.GetComponent<Rigidbody>());
         obj.transform.Rotate(rot);
-        obj.GetComponent<BulidingOBJ_Action>().Info = Item_Info;
-        obj.GetComponent<BulidingOBJ_Action>().Obj_Index = obj_index;
-        obj.GetComponent<BulidingOBJ_Action>().Install_Action();
+        BulidingOBJ_Action obj_action = obj.GetComponent<BulidingOBJ_Action>();
+        obj_action.Info = Item_Info;
+        obj_action.Obj_Index = obj_index;
+        obj_action.Is_SaveItem = true;
+        obj_action.Set_Buy();
+        obj_action.Set_Install();
+        obj_action.Install_Action();
 
     }
 
@@ -152,6 +156,7 @@ public class Item
     public string Sprite_Name;
     public string Model_Name;
     public int Price;
+    public int Selling_Price;
     public int Buff_Happy;
 
 }

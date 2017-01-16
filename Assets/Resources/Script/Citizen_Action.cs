@@ -279,7 +279,8 @@ public class Citizen_Action : Citizen_Variable {
         }
         else if (col.gameObject.CompareTag("EventOBJ"))
         {
-            if(col.GetComponent<BulidingOBJ_Action>().Is_Install != true) { return; }
+            if(!col.GetComponent<BulidingOBJ_Action>().Check_Is_Install || !col.GetComponent<BulidingOBJ_Action>().Check_Buy_Item) { return; }
+
 
             Event_OBJ = col.gameObject;
             Check_Event(col.gameObject.name);

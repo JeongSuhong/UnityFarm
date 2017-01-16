@@ -37,9 +37,11 @@ public class Select_Farm_Action : MonoBehaviour {
     public void View_SelectCrops_UI()
     {
         GetComponent<UIPanel>().alpha = 1;
+        GameManager.Get_Inctance().Set_ViewUI();
     }
     public void NotView_SelectCrops_UI()
     {
         GetComponent<UIPanel>().alpha = 0;
+        GameManager.Get_Inctance().Set_NotViewUI();
     }
 }

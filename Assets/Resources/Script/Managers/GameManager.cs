@@ -3,7 +3,7 @@ using System.Collections;
 using UnityEngine.SceneManagement;
 
 /*
- *   게임조작이나 전반적인 환경을 관리하는 스크립트.
+ *   게임조작이나 전반적인 환경을 관리하는 스크립트. 카메라 이동이나 조작 등을 관리한다.
  *    C_Update() : 화면을 드래그하면 해당 곳으로 이동할 수 있음. 
  *    C_Plant_Drag_Farm() : 화면을 드래그했을시 밭에 작물을 심는 함수를 호출. ( 화면 이동 x ) 
       C_Install_Item() : 화면을 클릭 & 드래그 했을 시 샘플 오브젝트를 해당한 곳으로 이동 ( 화면 이동 x )
@@ -81,12 +81,9 @@ public class GameManager : MonoBehaviour
     }
     IEnumerator C_Update()
     {
-
         while (true)
         {
-            if (Is_ViewUI) { yield return null; continue; }
-
-            if (Input.GetMouseButtonDown(0))
+            if (Input.GetMouseButton(0))
             {
                 // 카메라에서 화면상의 마우스 좌표에 해당하는 공간으로 레이를 쏜다.
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -98,11 +95,43 @@ public class GameManager : MonoBehaviour
                     GameObject obj = hit.collider.gameObject;
 
                     if (obj.CompareTag("EventOBJ"))
-                    { 
-                        obj.GetComponent<BulidingOBJ_Action>().Start_Action();
+                    {
+                        float timer = 0f;
+
+                        while (true)
+                        {
+                            if (Input.GetMouseButtonUp(0))
+                            {
+                                UIManager.Get_Inctance().NotView_Clicking();
+                                obj.GetComponent<BulidingOBJ_Action>().Start_Action();
+                                break;
+                            }
+
+                            timer += Time.deltaTime;
+
+                            if (timer > 0.25 & timer < 0.35 )
+                            {
+                                Vector3 pos = Camera.main.WorldToViewportPoint(obj.transform.position);
+                                pos = UICamera.mainCamera.ViewportToWorldPoint(pos);
+                                pos.z = 0f;
+                                UIManager.Get_Inctance().View_Clicking(pos);
+                            }
+                            else if (timer > 1.3f)
+                            {
+                                UIManager.Get_Inctance().NotView_Clicking();
+                                Item_Install_UI_Action.Get_Inctance().View_Item_InstallUI(obj);
+                                Install_Item(obj);
+                                StopCoroutine("C_Update");
+                            }
+                            else
+                            {
+                                UIManager.Get_Inctance().Set_Clicking_UI(timer - 0.3f, obj);
+                            }
+
+                            yield return null;
+                        }
                     }
                 }
-
             }
 
             yield return null;
@@ -113,7 +142,7 @@ public class GameManager : MonoBehaviour
     {
         if (Select_Crops_Manager.Get_Inctance().Select_Crop_ID == -1) { return; }
 
-        StopCoroutine("C_Update");
+        StopAllCoroutines();
         StartCoroutine(C_Plant_Drag_Farm());
     }
     IEnumerator C_Plant_Drag_Farm()
@@ -193,15 +222,6 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void Set_BasicSetting()
-    {
-        StopAllCoroutines();
-        Is_ViewUI = false;
-        StartCoroutine("C_Update");
-
-        Camera_Action.Get_Inctance().Set_CameraMoving();
-    }
-
     public string Set_Text_Time(int time)
     {
         string text_time = "";
@@ -223,9 +243,18 @@ public class GameManager : MonoBehaviour
         return text_time;
     }
 
+    public void Set_BasicSetting()
+    {
+        StopAllCoroutines();
+        Is_ViewUI = false;
+        StartCoroutine("C_Update");
+
+        Camera_Action.Get_Inctance().Set_CameraMoving();
+    }
     public void Set_ViewUI()
     {
         Is_ViewUI = true;
+        StopAllCoroutines();
         Camera_Action.Get_Inctance().Set_NotCameraMoving();
     }
     public void Set_NotViewUI()

@@ -58,12 +58,10 @@ public class Select_Crops_Manager : MonoBehaviour {
     {
         Select_Crop_ID = -1;
         GetComponent<UIPanel>().alpha = 1;
-        GameManager.Get_Inctance().Set_ViewUI();
     }
     public void NotView_SelectCrops_UI()
     {
         GetComponent<UIPanel>().alpha = 0;
-        GameManager.Get_Inctance().Set_NotViewUI();
     }
 
 }

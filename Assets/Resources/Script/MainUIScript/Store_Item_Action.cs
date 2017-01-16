@@ -35,7 +35,6 @@ public class Store_Item_Action : MonoBehaviour {
     {
         if(Check_Install(Item_Info.Buliding_ID) == false) { return; }
 
-
         if (EventOBJ == null)
         {
             GameObject EventOBJ_Prefab = Resources.Load("Prefabs/EventOBJ/" + Item_Info.Model_Name) as GameObject;
@@ -48,12 +47,13 @@ public class Store_Item_Action : MonoBehaviour {
 
             EventOBJ = Instantiate(EventOBJ_Prefab, Vector3.one, Quaternion.identity) as GameObject;
             EventOBJ.name = Item_Info.Model_Name;
+            EventOBJ.GetComponent<BulidingOBJ_Action>().Info = Item_Info;
             EventOBJ.AddComponent<Rigidbody>().useGravity = false;
         }
 
         EventOBJ.SetActive(true);
 
-        Ray ray = Camera.main.ScreenPointToRay(Camera_Action.Get_Inctance().transform.position);
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
         // Physics.Raycast(쏜 레이 정보, 충돌 정보, 거리)
         //  => 충돌이 되면 true를 리턴하면서 충돌 정보를 확인 할 수 있다.
@@ -65,7 +65,7 @@ public class Store_Item_Action : MonoBehaviour {
         }
 
         StoreManager.Get_Inctance().NotView_StroeUI();
-        Item_Install_UI_Action.Get_Inctance().View_Item_InstallUI(EventOBJ, Item_Info);
+        Item_Install_UI_Action.Get_Inctance().View_Item_InstallUI(EventOBJ);
         GameManager.Get_Inctance().Install_Item(EventOBJ);
     }
     bool Check_Install(int Buliding_ID)

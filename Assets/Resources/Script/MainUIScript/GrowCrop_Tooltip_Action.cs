@@ -14,7 +14,7 @@ public class GrowCrop_Tooltip_Action : MonoBehaviour {
 
     public void View_Tooltip(CropInfo info,  Farm_Action farm)
     {
-        Camera_Action.Get_Inctance().Set_NotCameraMoving();
+        GameManager.Get_Inctance().Set_ViewUI();
 
         CropIcon.spriteName = info.Sprite_Name;
         CropName.text = info.Name;
@@ -43,6 +43,6 @@ public class GrowCrop_Tooltip_Action : MonoBehaviour {
     {
         GetComponent<UIPanel>().alpha = 0;
         StopAllCoroutines();
-        GameManager.Get_Inctance().Set_BasicSetting();
+        GameManager.Get_Inctance().Set_NotViewUI();
     }
 }
