@@ -43,6 +43,6 @@ public class GrowCrop_Tooltip_Action : MonoBehaviour {
     {
         GetComponent<UIPanel>().alpha = 0;
         StopAllCoroutines();
-        GameManager.Get_Inctance().Set_NotViewUI();
+        GameManager.Get_Inctance().Set_BasicSetting();
     }
 }

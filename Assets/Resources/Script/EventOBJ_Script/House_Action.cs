@@ -30,6 +30,8 @@ public class House_Action : BulidingOBJ_Action
     public override void Install_Action()
     {
         Origin_Position = transform.localPosition;
+        Origin_Rotation = transform.localRotation.eulerAngles;
+
 
         Citizen_Info Citizen = CitizenManager.Get_Inctance().Check_Set_House(Obj_Index);
 

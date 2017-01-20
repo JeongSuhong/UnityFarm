@@ -66,7 +66,7 @@ public class Citizen_Infomation_UI_Action : MonoBehaviour {
     {
         Time.timeScale = 1f;
         GetComponent<UIPanel>().alpha = 0;
-        GameManager.Get_Inctance().Set_NotViewUI();
+        GameManager.Get_Inctance().Set_BasicSetting();
     }
 
 }

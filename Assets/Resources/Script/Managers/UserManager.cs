@@ -19,6 +19,7 @@ public class UserManager : MonoBehaviour {
 
     private Dictionary<int, int> CropInven = new Dictionary<int, int>();
     private Dictionary<int, int> ItemInven = new Dictionary<int, int>();
+    private List<BulidingOBJ_Action> ItemOBJs = new List<BulidingOBJ_Action>();
 
     public int Level;
     public float Exp;
@@ -151,12 +152,13 @@ public class UserManager : MonoBehaviour {
         obj_action.gameObject.SetActive(true);
         Select_OBJ.gameObject.SetActive(false);
         obj_action.Install_Action();
+
+        Add_InstallOBJ(obj_action);
     }
 
-
-    public void Increase_House_Count()
+    public void Increase_House_Count(int  value)
     {
-        House_Count++;
+        House_Count += value;
         UIManager.Get_Inctance().Set_HouseCount_UI(House_Count, Max_House);
         StoreManager.Get_Inctance().Update_Item_Limit_UI((int)LIMIT_CHECK_OBJ.HOUSE);
     }
@@ -170,9 +172,9 @@ public class UserManager : MonoBehaviour {
         return true;
     }
 
-    public void Increase_Farm_Count()
+    public void Increase_Farm_Count(int value)
     {
-        Farm_Count++;
+        Farm_Count += value;
         StoreManager.Get_Inctance().Update_Item_Limit_UI((int)LIMIT_CHECK_OBJ.FARM);
     }
     public bool Check_Install_Farm()
@@ -211,17 +213,46 @@ public class UserManager : MonoBehaviour {
         {
             case LIMIT_CHECK_OBJ.FARM:
                 {
-                    Increase_Farm_Count();
+                    Increase_Farm_Count(1);
                     break;
                 }
             case LIMIT_CHECK_OBJ.HOUSE:
                 {
-                    Increase_House_Count();
+                    Increase_House_Count(1);
                     break;
                 }
             default: { break; }
         }
 
+    }
+
+    public void Add_InstallOBJ(BulidingOBJ_Action obj_action)
+    {
+        if(ItemOBJs.Contains(obj_action)) { return; }
+
+        ItemOBJs.Add(obj_action);
+    }
+    public void Delete_InstallOBJ(int obj_index, int buliding_obj)
+    {
+        for(int i = 0; i < ItemOBJs.Count; i++)
+        {
+           if( ItemOBJs[i].Obj_Index == obj_index && ItemOBJs[i].Info.Buliding_ID == buliding_obj )
+            {
+                if(ItemOBJs[i].Info.Buliding_ID == (int)LIMIT_CHECK_OBJ.HOUSE)
+                {
+                    Increase_House_Count(-1);
+                }
+                else if(ItemOBJs[i].Info.Buliding_ID == (int)LIMIT_CHECK_OBJ.FARM)
+                {
+                    Increase_Farm_Count(-1);
+                }
+
+                Destroy(ItemOBJs[i].gameObject);
+                ItemOBJs.RemoveAt(i);
+
+                return;
+            }
+        }
     }
     /////// Network //////
 
@@ -271,13 +302,27 @@ public class UserManager : MonoBehaviour {
         foreach (KeyValuePair<string, object> info in dataDic)
         {
             RecvInstallObjData data = JsonReader.Deserialize<RecvInstallObjData>(JsonWriter.Serialize(info.Value));
-            Vector3 Pos = new Vector3(data.Pos_x, data.Pos_y, data.Pos_z);
-            Vector3 Rot = new Vector3(data.Rot_x, data.Rot_y, data.Rot_z);
 
             if (data.Check_Install)
             {
+                Vector3 Pos = new Vector3(data.Pos_x, data.Pos_y, data.Pos_z);
+                Vector3 Rot = new Vector3(0f, data.Rot_y, 0f);
+
                 StoreManager.Get_Inctance().Create_Install_OBJ(data.Obj_Index, data.Buliding_ID, Pos, Rot);
                 Set_Limit_InstallOBJ(data.Buliding_ID);
+            }
+            else
+            {
+                Inventory_UI_Action.Get_Inctance().Create_ItemButton(StoreManager.Get_Inctance().Get_ItemInfo(data.Buliding_ID), data.Obj_Index, null);
+            }
+
+            if(!ItemInven.ContainsKey(data.Buliding_ID))
+            {
+                ItemInven.Add(data.Buliding_ID, 1);
+            }
+            else
+            {
+                ItemInven[data.Buliding_ID] += 1;
             }
         }
     }
@@ -296,10 +341,8 @@ public class UserManager : MonoBehaviour {
         sendData.Add("pos_x", obj.transform.position.x);
         sendData.Add("pos_y", obj.transform.position.y);
         sendData.Add("pos_z", obj.transform.position.z);
-        sendData.Add("rot_x", obj.transform.rotation.eulerAngles.x);
         sendData.Add("rot_y", obj.transform.rotation.eulerAngles.y);
-        sendData.Add("rot_z", obj.transform.rotation.eulerAngles.z);
-        sendData.Add("check_install", buliding_action.Check_Is_Install);
+        sendData.Add("check_install", buliding_action.Is_Install);
         sendData.Add("check_buy", buliding_action.Check_Buy_Item);
         sendData.Add("obj_index", buliding_action.Obj_Index);
 
@@ -308,13 +351,23 @@ public class UserManager : MonoBehaviour {
     void Reply_Set_DB_Install_Buliding(string json)
     {
         Dictionary<string, int> data = (Dictionary < string, int> )JsonReader.Deserialize<Dictionary<string, int>>(json);
+        BulidingOBJ_Action action = Get_Buliding_OBJ.GetComponent<BulidingOBJ_Action>();
 
         // 아이템을 구매해서 설치한 경우
         if (data["user_gold"] != Gold)
         {
-            Get_Buliding_OBJ.GetComponent<BulidingOBJ_Action>().Obj_Index = data["obj_index"];
+            action.Obj_Index = data["obj_index"];
             Buy_OBJ(Get_Buliding_OBJ);
         }
+        // 보관한 아이템을 설치하는 경우
+        else if(action.Check_Buy_Item && action.Is_Install)
+        {
+            Get_Buliding_OBJ.SetActive(true);
+            action.Is_Install = true;
+            Get_Buliding_OBJ.GetComponent<BulidingOBJ_Action>().Install_Action();
+            return;
+        }
+        
 
         Set_Gold(data["user_gold"]);
     }
@@ -430,6 +483,60 @@ public class UserManager : MonoBehaviour {
 
     }
 
+    public void Update_DB_User_Gold(int value)
+    {
+        int index = GameManager.Get_Inctance().Get_UserIndex();
+
+        Dictionary<string, object> sendData = new Dictionary<string, object>();
+        sendData.Add("contents", "Update_User_Gold");
+
+        sendData.Add("user_index", index);
+        sendData.Add("gold_value", value);
+
+        StartCoroutine(NetworkManager.Instance.ProcessNetwork(sendData, Reply_Update_DB_User_Gold));
+    }
+    void Reply_Update_DB_User_Gold(string json)
+    {
+        int gold = (int)JsonReader.Deserialize(json, typeof(int));
+
+        Set_Gold(gold);
+    }
+
+    public void Update_DB_User_Storage_OBJ(int Item_ID, int Buliding_ID)
+    {
+        int index = GameManager.Get_Inctance().Get_UserIndex();
+
+        Dictionary<string, object> sendData = new Dictionary<string, object>();
+        sendData.Add("contents", "Update_Storage_UserItem");
+
+        sendData.Add("user_index", index);
+        sendData.Add("item_id", Item_ID);
+        sendData.Add("buliding_id", Buliding_ID);
+
+        StartCoroutine(NetworkManager.Instance.ProcessNetwork(sendData, Reply_Update_DB_User_Storage_DB));
+    }
+    void Reply_Update_DB_User_Storage_DB(string json)
+    {
+        int[] datas = (int[])JsonReader.Deserialize(json, typeof(int[]));
+        
+        for(int i = 0; i < ItemOBJs.Count; i++)
+        {
+            if (ItemOBJs[i].Obj_Index == datas[0] && ItemOBJs[i].Info.Buliding_ID == datas[1] )
+            {
+                ItemOBJs[i].Is_Install = false;
+                ItemOBJs[i].gameObject.SetActive(false);
+                Inventory_UI_Action.Get_Inctance().Create_ItemButton(ItemOBJs[i].Info, ItemOBJs[i].Obj_Index, ItemOBJs[i].gameObject);
+
+                return;
+            }
+        }
+    }
+    //// TEST
+    public void Update_1000_User_Gold()
+    {
+        Update_DB_User_Gold(1000);
+    }
+
     private class RecvInstallObjData
     {
         public int Obj_Index;
@@ -437,9 +544,7 @@ public class UserManager : MonoBehaviour {
         public float Pos_x;
         public float Pos_y;
         public float Pos_z;
-        public float Rot_x;
         public float Rot_y;
-        public float Rot_z;
         public bool Check_Install;
     }
     private class RecvUserCropData

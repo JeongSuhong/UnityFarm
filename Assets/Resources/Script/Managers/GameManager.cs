@@ -16,6 +16,7 @@ public class GameManager : MonoBehaviour
     private int User_Index;                                     // 게임을 플레이하고있는 User의 Index
 
     public bool Is_ViewUI = false;
+    public bool Map_Move = false;
 
     public bool Check_LoadData = false;
 
@@ -83,7 +84,7 @@ public class GameManager : MonoBehaviour
     {
         while (true)
         {
-            if (Input.GetMouseButton(0))
+            if (Input.GetMouseButtonDown(0))
             {
                 // 카메라에서 화면상의 마우스 좌표에 해당하는 공간으로 레이를 쏜다.
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -94,6 +95,31 @@ public class GameManager : MonoBehaviour
                 {
                     GameObject obj = hit.collider.gameObject;
 
+                    switch (obj.tag)
+                    {
+                        case "EventOBJ":
+                            {
+                                Map_Move = false;
+                                break;
+                            }
+                        default:
+                            {
+                                Map_Move = true;
+                                break;
+                            }
+                    }
+                }
+            }
+
+            if (Input.GetMouseButton(0) && !Map_Move)
+            {
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                RaycastHit hit;
+
+                if (Physics.Raycast(ray, out hit, Mathf.Infinity))
+                {
+                    GameObject obj = hit.collider.gameObject;
+            
                     if (obj.CompareTag("EventOBJ"))
                     {
                         float timer = 0f;
@@ -134,7 +160,11 @@ public class GameManager : MonoBehaviour
                 }
             }
 
-            yield return null;
+            if (Input.GetMouseButtonUp(0))
+            {
+                Map_Move = false;
+            }
+                yield return null;
         }
     }
 
@@ -178,6 +208,17 @@ public class GameManager : MonoBehaviour
     public void Install_Item(GameObject obj)
     {
         StopAllCoroutines();
+
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit;
+
+        if (Physics.Raycast(ray, out hit, Mathf.Infinity))
+        {
+            Vector3 pos = hit.collider.transform.position;
+            pos.y = 0.06f;
+            obj.transform.position = pos;
+        }
+
         StartCoroutine(C_Install_Item(obj));
     }
     IEnumerator C_Install_Item(GameObject obj)
@@ -195,7 +236,7 @@ public class GameManager : MonoBehaviour
                 {
                     if (hit.collider.gameObject == obj)
                     {
-                        Set_ViewUI();
+                        Camera_Action.Get_Inctance().Set_NotCameraMoving();
 
                         while (Input.GetMouseButton(0))
                         {
@@ -214,7 +255,7 @@ public class GameManager : MonoBehaviour
                     }
                     else
                     {
-                        Set_NotViewUI();
+                        Camera_Action.Get_Inctance().Set_CameraMoving();
                     }
                 }
             }

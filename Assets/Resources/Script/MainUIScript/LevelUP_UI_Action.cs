@@ -25,6 +25,6 @@ public class LevelUP_UI_Action : MonoBehaviour {
 
         Time.timeScale = 1;
 
-        GameManager.Get_Inctance().Set_NotViewUI();
+        GameManager.Get_Inctance().Set_BasicSetting();
     }
 }

@@ -56,14 +56,18 @@ public class Item_Install_UI_Action : MonoBehaviour {
         GetComponent<UIPanel>().alpha = 1f;
         Select_OBJ = obj;
         Select_OBJ_Info = Select_OBJ.GetComponent<BulidingOBJ_Action>().Info;
+        GameManager.Get_Inctance().Install_Item(obj);
         StartCoroutine(C_View_Item_InstallUI());
     }
     IEnumerator C_View_Item_InstallUI()
     {
-        if(Select_OBJ == null) { yield break; }
+        Check_OBJState();
+
         while (true)
         {
-            Check_OBJState();
+            if(Select_OBJ == null) { yield break; }
+
+            Check_InstallOBJ();
             // 처음 위치해야할 OBJ의 월드상의 위치를 화면상의 위치로 변환한다.
             Vector3 p = Camera.main.WorldToViewportPoint(Select_OBJ.transform.position);
             // p의 화면상 위치는 Camera기준이기 때문에 UICamera기준으로 다시 바꾼다.
@@ -79,20 +83,29 @@ public class Item_Install_UI_Action : MonoBehaviour {
         }
     }
 
-    void Check_OBJState()
+    void Check_InstallOBJ()
     {
         BulidingOBJ_Action state = Select_OBJ.GetComponent<BulidingOBJ_Action>();
-
-            Set_Base_Button_UI();
 
         if(state.Check_Is_Install == false)
         {
             Set_NotInstall_UI();
         }
+    }
+    void Check_OBJState()
+    {
+        BulidingOBJ_Action state = Select_OBJ.GetComponent<BulidingOBJ_Action>();
 
-        if (state.Is_SaveItem == false)
+        Set_Base_Button_UI();
+
+        if (state.Check_Buy_Item == false)
         {
-            Set_NotSaveItem_UI();
+            Set_NotSellItem_UI();
+            Set_NotStorge_UI();
+        }
+        if(Select_OBJ_Info.Buliding_ID == (int)LIMIT_CHECK_OBJ.FARM || Select_OBJ_Info.Buliding_ID == (int)LIMIT_CHECK_OBJ.HOUSE)
+        {
+            Set_NotStorge_UI();
         }
     }
 
@@ -101,9 +114,12 @@ public class Item_Install_UI_Action : MonoBehaviour {
         NotInstall_Icon.SetActive(true);
         NotButtons[(int)BUTTON_TYPE.BUY].SetActive(true);
     }
-    void Set_NotSaveItem_UI()
+    void Set_NotSellItem_UI()
     {
         NotButtons[(int)BUTTON_TYPE.SELL].SetActive(true);
+    }
+    void Set_NotStorge_UI()
+    {
         NotButtons[(int)BUTTON_TYPE.STORAGE].SetActive(true);
     }
 
@@ -116,6 +132,19 @@ public class Item_Install_UI_Action : MonoBehaviour {
         }
     }
 
+    public void NotView_Item_InstallUI()
+    {
+        StopCoroutine("C_View_Item_InstallUI");
+
+        Select_OBJ = null;
+        Select_OBJ_Info = null;
+
+        GetComponent<UIPanel>().alpha = 0f;
+        Set_Base_Button_UI();
+        GameManager.Get_Inctance().Set_BasicSetting();
+    }
+
+
     public void Cancel_Install()
     {
         // 산 아이템이 아니면 취소 버튼을 누를때 없어지게 한다.
@@ -126,28 +155,35 @@ public class Item_Install_UI_Action : MonoBehaviour {
         else
         {
             Select_OBJ.transform.position = Select_OBJ.GetComponent<BulidingOBJ_Action>().Origin_Position;
+            Select_OBJ.transform.Rotate(Select_OBJ.GetComponent<BulidingOBJ_Action>().Origin_Rotation);
         }
 
         NotView_Item_InstallUI();
     }
-    public void NotView_Item_InstallUI()
-    {
-        GetComponent<UIPanel>().alpha = 0f;
-        Set_Base_Button_UI();
-        StopCoroutine("C_View_Item_InstallUI");
-        GameManager.Get_Inctance().Set_BasicSetting();
-    }
-
     public void Install_OBJ()
     {
         BulidingOBJ_Action action = Select_OBJ.GetComponent<BulidingOBJ_Action>();
+        action.Is_Install = true;
 
         UserManager.Get_Inctance().Set_DB_Install_Buliding(action, Select_OBJ);
+
+        Select_OBJ.SetActive(false);
 
         NotView_Item_InstallUI();
     }
     public void Rotation_OBJ()
     {
         Select_OBJ.transform.Rotate(new Vector3(0, 90, 0f));
+    }
+    public void Storage_OBJ()
+    {
+        BulidingOBJ_Action action = Select_OBJ.GetComponent<BulidingOBJ_Action>();
+        UserManager.Get_Inctance().Update_DB_User_Storage_OBJ(action.Obj_Index, action.Info.Buliding_ID);
+        NotView_Item_InstallUI();
+    }
+    public void Sell_OBJ()
+    {
+        StoreManager.Get_Inctance().Set_DB_Sell_Item(Select_OBJ.GetComponent<BulidingOBJ_Action>().Obj_Index, Select_OBJ_Info.Buliding_ID);
+        NotView_Item_InstallUI();
     }
 }

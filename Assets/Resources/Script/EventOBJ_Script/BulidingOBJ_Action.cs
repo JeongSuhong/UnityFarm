@@ -17,6 +17,7 @@ public class BulidingOBJ_Action : MonoBehaviour {
     public bool Check_Buy_Item = false;
     public bool Is_Install = false;
     public Vector3 Origin_Position = Vector3.zero;
+    public Vector3 Origin_Rotation = Vector3.zero;
     
     public virtual void Start_Action()
     {
@@ -25,6 +26,7 @@ public class BulidingOBJ_Action : MonoBehaviour {
     public virtual void Install_Action()
     {
         Origin_Position = transform.localPosition;
+        Origin_Rotation = transform.localRotation.eulerAngles;
     }
 
     void OnEnable()

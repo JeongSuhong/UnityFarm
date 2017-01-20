@@ -49,6 +49,7 @@ public class Citizen_Action : Citizen_Variable {
 
     public void Set_Active()
     {
+        State = CITIZEN_STATE.NONE;
         StartCoroutine(C_Set_Active());
     }
     private IEnumerator C_Set_Active()
@@ -186,6 +187,11 @@ public class Citizen_Action : Citizen_Variable {
     }
     private IEnumerator C_Farmming()
     {
+        while(Event_OBJ.GetComponent<Farm_Action>() == null)
+        {
+            yield return null;
+        }
+
         if(Event_OBJ.GetComponent<Farm_Action>().State != Farm_Action.FARM_STATE.NONE)
         {
             State = CITIZEN_STATE.NONE;

@@ -137,6 +137,6 @@ public class Sell_Crop_UI_Action : MonoBehaviour {
         Crop_Name.text = "";
 
         GetComponent<UIPanel>().alpha = 0f;
-        GameManager.Get_Inctance().Set_NotViewUI();
+        GameManager.Get_Inctance().Set_BasicSetting();
     }
 }

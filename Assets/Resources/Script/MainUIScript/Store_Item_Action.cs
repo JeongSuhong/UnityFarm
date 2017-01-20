@@ -8,7 +8,7 @@ using System.Collections;
 
 public class Store_Item_Action : MonoBehaviour {
 
-    Item Item_Info;
+    public Item Item_Info;
     GameObject EventOBJ = null;
 
     public UILabel Item_Name;
@@ -27,17 +27,18 @@ public class Store_Item_Action : MonoBehaviour {
         Item_Name.text = Item_Info.Name;
         Item_Icon.spriteName = Item_Info.Sprite_Name;
         Label_Gold.text = Item_Info.Price.ToString();
-
+    
         Check_Limit(Item_Info.Buliding_ID);
     }
 
     public void Install_Item()
     {
-        if(Check_Install(Item_Info.Buliding_ID) == false) { return; }
+        if (Check_Install(Item_Info.Buliding_ID) == false) { return; }
+        if(UserManager.Get_Inctance().Get_Gold() < Item_Info.Price) { return; }
 
         if (EventOBJ == null)
         {
-            GameObject EventOBJ_Prefab = Resources.Load("Prefabs/EventOBJ/" + Item_Info.Model_Name) as GameObject;
+            GameObject EventOBJ_Prefab = Resources.Load("Prefabs/InstallOBJ_Prefabs/" + Item_Info.Model_Name) as GameObject;
 
             if(EventOBJ_Prefab == null)
             {

@@ -95,7 +95,7 @@ public class CropsManager : MonoBehaviour
             Set_SelectCropUI(data);
         }
 
-        CropsManager.Get_Inctance().Check_LevelLimit_CropButton();
+        Check_LevelLimit_CropButton();
     }
 }
 public class CropInfo

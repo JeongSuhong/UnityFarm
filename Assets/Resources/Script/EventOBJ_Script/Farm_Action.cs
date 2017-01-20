@@ -34,6 +34,9 @@ public class Farm_Action : BulidingOBJ_Action
     public override void Install_Action()
     {
         Origin_Position = transform.localPosition;
+        Origin_Rotation = transform.localRotation.eulerAngles;
+
+        Debug.Log(Origin_Rotation);
 
         Get_DB_User_PlantData(Obj_Index);
     }
@@ -67,17 +70,9 @@ public class Farm_Action : BulidingOBJ_Action
 
         if(Crop_ID == -1) { return; }
 
-        Set_DB_User_PlantData(Obj_Index, Crop_ID, Crop_Price, UserManager.Get_Inctance().Get_Gold());
-
         State = FARM_STATE.GROWING;
 
-        SeedObj.SetActive(true);
-
-        Planted_Crop = CropsManager.Get_Inctance().Get_CropInfo(Crop_ID);
-        GrowTime = Planted_Crop.Grow_Time;
-
-        StartCoroutine(C_Grow_Time());
-
+        Set_DB_User_PlantData(Obj_Index, Crop_ID, Crop_Price);
     }
     void Harvest_Crop()
     {
@@ -121,9 +116,11 @@ public class Farm_Action : BulidingOBJ_Action
 
     // 이하는 네트워크 관련 함수.
 
-    public void Set_DB_User_PlantData(int obj_index , int crop_id, int crop_price, int gold)
+    public void Set_DB_User_PlantData(int obj_index , int crop_id, int crop_price)
     {
         int index = GameManager.Get_Inctance().Get_UserIndex();
+
+        Debug.Log(crop_id);
 
         Dictionary<string, object> sendData = new Dictionary<string, object>();
         sendData.Add("contents", "Set_User_PlantData");
@@ -137,6 +134,20 @@ public class Farm_Action : BulidingOBJ_Action
     void Reply_Set_DB_User_PlantData(string json)
     {
         int gold = JsonReader.Deserialize<int>(json);
+
+        if(gold == -9999)
+        {
+            State = FARM_STATE.NONE;
+            return;
+        }
+
+        SeedObj.SetActive(true);
+
+        int Crop_ID = Select_Crops_Manager.Get_Inctance().Select_Crop_ID;
+        Planted_Crop = CropsManager.Get_Inctance().Get_CropInfo(Crop_ID);
+        GrowTime = Planted_Crop.Grow_Time;
+
+        StartCoroutine(C_Grow_Time());
 
         UserManager.Get_Inctance().Set_Gold(gold);
     }

@@ -63,7 +63,7 @@ public class StoreManager : MonoBehaviour
 
         if (Item_Info == null) { return; }
 
-        GameObject EventOBJ_Prefab = Resources.Load("Prefabs/EventOBJ/" + Item_Info.Model_Name) as GameObject;
+        GameObject EventOBJ_Prefab = Resources.Load("Prefabs/InstallOBJ_Prefabs/" + Item_Info.Model_Name) as GameObject;
 
         if (EventOBJ_Prefab == null)
         {
@@ -83,6 +83,7 @@ public class StoreManager : MonoBehaviour
         obj_action.Set_Install();
         obj_action.Install_Action();
 
+        UserManager.Get_Inctance().Add_InstallOBJ(obj_action);
     }
 
     public Item Get_ItemInfo(int find_id)
@@ -97,6 +98,52 @@ public class StoreManager : MonoBehaviour
 
         return null;
     }
+
+    public void View_Item_All()
+    {
+        for (int i = 0; i < Grid_Items.transform.childCount; i++)
+        {
+            Grid_Items.GetChild(i).gameObject.SetActive(true);
+        }
+
+        Grid_Items.repositionNow = true;
+        Grid_Items.GetComponent<UIScrollView>().ResetPosition();
+    }
+    public void View_Item_Buliding()
+    {
+        for (int i = 0; i < Grid_Items.transform.childCount; i++)
+        {
+            if (Grid_Items.GetChild(i).GetComponent<Store_Item_Action>().Item_Info.Type != ITEM_TYPE.BUILDING)
+            {
+                Grid_Items.GetChild(i).gameObject.SetActive(false);
+            }
+            else
+            {
+                Grid_Items.GetChild(i).gameObject.SetActive(true);
+            }
+        }
+
+        Grid_Items.repositionNow = true;
+        Grid_Items.GetComponent<UIScrollView>().ResetPosition();
+    }
+    public void View_Item_Landscaping()
+    {
+        for (int i = 0; i < Grid_Items.transform.childCount; i++)
+        {
+            if (Grid_Items.GetChild(i).GetComponent<Store_Item_Action>().Item_Info.Type != ITEM_TYPE.LANDSCAPING)
+            {
+                Grid_Items.GetChild(i).gameObject.SetActive(false);
+            }
+            else
+            {
+                Grid_Items.GetChild(i).gameObject.SetActive(true);
+            }
+        }
+
+        Grid_Items.repositionNow = true;
+        Grid_Items.GetComponent<UIScrollView>().ResetPosition();
+    }
+
     public void View_StoreUI()
     {
         GetComponent<UIPanel>().alpha = 1;
@@ -105,7 +152,7 @@ public class StoreManager : MonoBehaviour
     public void NotView_StroeUI()
     {
         GetComponent<UIPanel>().alpha = 0;
-        GameManager.Get_Inctance().Set_NotViewUI();
+        GameManager.Get_Inctance().Set_BasicSetting();
     }
 
     public void Update_Item_Limit_UI(int buliding_id)
@@ -113,7 +160,7 @@ public class StoreManager : MonoBehaviour
         string name = Get_ItemInfo(buliding_id).Name;
         GameObject obj = Grid_Items.transform.FindChild(name).gameObject;
 
-        if(obj == null) { return; }
+        if (obj == null) { return; }
 
         obj.GetComponent<Store_Item_Action>().Check_Limit(buliding_id);
     }
@@ -126,9 +173,9 @@ public class StoreManager : MonoBehaviour
         Dictionary<string, object> sendData = new Dictionary<string, object>();
         sendData.Add("contents", "Get_ItemInfo");
 
-       yield return StartCoroutine(NetworkManager.Instance.ProcessNetwork(sendData, Reply_DB_ItemInfo));
+        yield return StartCoroutine(NetworkManager.Instance.ProcessNetwork(sendData, Reply_DB_ItemInfo));
     }
-    public void Reply_DB_ItemInfo(string json)
+    void Reply_DB_ItemInfo(string json)
     {
         // JsonReader.Deserialize() : 원하는 자료형의 json을 만들 수 있다
         Dictionary<string, object> dataDic = (Dictionary<string, object>)JsonReader.Deserialize(json, typeof(Dictionary<string, object>));
@@ -141,12 +188,37 @@ public class StoreManager : MonoBehaviour
             Create_Store_Item_UI(data);
         }
     }
+
+    public void Set_DB_Sell_Item(int obj_index, int buliding_id)
+    {
+        int index = GameManager.Get_Inctance().Get_UserIndex();
+
+        Dictionary<string, object> sendData = new Dictionary<string, object>();
+        sendData.Add("contents", "Set_Sell_Item");
+        sendData.Add("user_index", index);
+        sendData.Add("obj_index", obj_index);
+        sendData.Add("buliding_id", buliding_id);
+
+        StartCoroutine(NetworkManager.Instance.ProcessNetwork(sendData, Reply_Set_DB_Sell_Item));
+    }
+    void Reply_Set_DB_Sell_Item(string json)
+    {
+        int[] data = (int[])JsonReader.Deserialize(json, typeof(int[]));
+
+        int gold = data[0];
+        int obj_index = data[1];
+        int buliding_id = data[2];
+
+        UserManager.Get_Inctance().Delete_InstallOBJ(obj_index, buliding_id);
+        UserManager.Get_Inctance().Set_Gold(gold);
+    }
 }
+
 public enum ITEM_TYPE
 {
     BUILDING = 0,
     LANDSCAPING,
-     CONSUMABLES,
+    FACILITY,
 }
 public class Item
 {
