@@ -11,6 +11,7 @@ public class GrowCrop_Tooltip_Action : MonoBehaviour {
     public UISprite CropIcon;
     public UILabel CropName;
     public UILabel GrowTime;
+    public UILabel Crop_Exp;
 
     public void View_Tooltip(CropInfo info,  Farm_Action farm)
     {
@@ -19,6 +20,7 @@ public class GrowCrop_Tooltip_Action : MonoBehaviour {
         CropIcon.spriteName = info.Sprite_Name;
         CropName.text = info.Name;
         GrowTime.text = farm.GrowTime.ToString();
+        Crop_Exp.text = info.Get_Exp.ToString();
 
         GetComponent<UIPanel>().alpha = 1;
 

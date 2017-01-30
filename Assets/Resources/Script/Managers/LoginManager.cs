@@ -8,12 +8,35 @@ using System;
  *  로그인 화면을 담당하는 스크립트. 
  * 
  */
-public class Login_Action : MonoBehaviour {
-   
+public class LoginManager : MonoBehaviour {
+
+    public GameObject MainUI;
+
+    public UIPanel LoginUI;
+    public UIPanel JoinUI;
+
     public UIInput Login_ID;
     public UIInput Login_PW;
     public UIInput Join_ID;
     public UIInput Join_PW;
+
+    void Awake()
+    {
+        LoginUI.alpha = 0;
+        JoinUI.alpha = 0;
+    }
+
+    public void View_LoginUI()
+    {
+        MainUI.SetActive(false);
+        LoginUI.alpha = 1;
+        JoinUI.alpha = 0;
+    }
+    public void View_JoinUI()
+    {
+        LoginUI.alpha = 0;
+        JoinUI.alpha = 1;
+    }
 
     public void Set_Login()
     {
@@ -63,9 +86,9 @@ public class Login_Action : MonoBehaviour {
 
         sendData.Add("user_id", Join_ID.value);
         sendData.Add("user_pw", Join_PW.value);
-        sendData.Add("join_time", DateTime.Now.ToString("yyyy-MM-dd-hh-mm-ss"));
+        sendData.Add("join_time", DateTime.Now);
 
-        Debug.Log(DateTime.Now.ToString());
+        Debug.Log("가입 시간 " + DateTime.Now.ToString());
 
         StartCoroutine(NetworkManager.Instance.ProcessNetwork(sendData, ReplyLogin));
     }

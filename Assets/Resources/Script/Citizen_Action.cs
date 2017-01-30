@@ -66,6 +66,13 @@ public class Citizen_Action : Citizen_Variable {
                 {
                     State = CITIZEN_STATE.RESTING;
                 }
+                else if (Loneliness == Max_Loneliness)
+                {
+                    if (Talk_Target != null)
+                    {
+                        State = CITIZEN_STATE.TALK;
+                    }
+                }
 
                 if (State == CITIZEN_STATE.NONE)
                 {

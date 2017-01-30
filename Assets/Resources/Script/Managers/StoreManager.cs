@@ -109,6 +109,23 @@ public class StoreManager : MonoBehaviour
         Grid_Items.repositionNow = true;
         Grid_Items.GetComponent<UIScrollView>().ResetPosition();
     }
+    public void View_Item_Facility()
+    {
+        for (int i = 0; i < Grid_Items.transform.childCount; i++)
+        {
+            if (Grid_Items.GetChild(i).GetComponent<Store_Item_Action>().Item_Info.Type != ITEM_TYPE.FACILITY)
+            {
+                Grid_Items.GetChild(i).gameObject.SetActive(false);
+            }
+            else
+            {
+                Grid_Items.GetChild(i).gameObject.SetActive(true);
+            }
+        }
+
+        Grid_Items.repositionNow = true;
+        Grid_Items.GetComponentInParent<UIScrollView>().ResetPosition();
+    }
     public void View_Item_Buliding()
     {
         for (int i = 0; i < Grid_Items.transform.childCount; i++)
@@ -124,7 +141,7 @@ public class StoreManager : MonoBehaviour
         }
 
         Grid_Items.repositionNow = true;
-        Grid_Items.GetComponent<UIScrollView>().ResetPosition();
+        Grid_Items.GetComponentInParent<UIScrollView>().ResetPosition();
     }
     public void View_Item_Landscaping()
     {
@@ -141,7 +158,7 @@ public class StoreManager : MonoBehaviour
         }
 
         Grid_Items.repositionNow = true;
-        Grid_Items.GetComponent<UIScrollView>().ResetPosition();
+        Grid_Items.GetComponentInParent<UIScrollView>().ResetPosition();
     }
 
     public void View_StoreUI()
@@ -162,9 +179,8 @@ public class StoreManager : MonoBehaviour
 
         if (obj == null) { return; }
 
-        obj.GetComponent<Store_Item_Action>().Check_Limit(buliding_id);
+        obj.GetComponent<Store_Item_Action>().Check_Limit();
     }
-
 
     // 이하는 네트워크 관련 함수
 
@@ -216,9 +232,9 @@ public class StoreManager : MonoBehaviour
 
 public enum ITEM_TYPE
 {
-    BUILDING = 0,
-    LANDSCAPING,
+    LANDSCAPING = 0,
     FACILITY,
+    BUILDING,
 }
 public class Item
 {

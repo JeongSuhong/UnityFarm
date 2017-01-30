@@ -87,9 +87,18 @@ public class Item_Install_UI_Action : MonoBehaviour {
     {
         BulidingOBJ_Action state = Select_OBJ.GetComponent<BulidingOBJ_Action>();
 
+        if(state.Info.Type == ITEM_TYPE.BUILDING)
+        {
+            Set_NotSellItem_UI();
+        }
+
         if(state.Check_Is_Install == false)
         {
             Set_NotInstall_UI();
+        }
+        else
+        {
+            Set_Install_UI();
         }
     }
     void Check_OBJState()
@@ -113,6 +122,11 @@ public class Item_Install_UI_Action : MonoBehaviour {
     {
         NotInstall_Icon.SetActive(true);
         NotButtons[(int)BUTTON_TYPE.BUY].SetActive(true);
+    }
+    void Set_Install_UI()
+    {
+        NotInstall_Icon.SetActive(false);
+        NotButtons[(int)BUTTON_TYPE.BUY].SetActive(false);
     }
     void Set_NotSellItem_UI()
     {

@@ -17,8 +17,8 @@ using JsonFx.Json;
 
 public class UserManager : MonoBehaviour {
 
-    private Dictionary<int, int> CropInven = new Dictionary<int, int>();
-    private Dictionary<int, int> ItemInven = new Dictionary<int, int>();
+    private Dictionary<int, int> CropInven = new Dictionary<int, int>();               // Crop_ID | Count
+    private Dictionary<int, int> ItemInven = new Dictionary<int, int>();                // Buliding_ID | Count
     private List<BulidingOBJ_Action> ItemOBJs = new List<BulidingOBJ_Action>();
 
     public int Level;
@@ -192,19 +192,9 @@ public class UserManager : MonoBehaviour {
         Update_DB_UserExp(value);
     }
 
-    public bool Check_Inven_InstallOBJ(int obj_index)
+    public bool Check_Inven_InstallOBJ(int Buldling_ID)
     {
-        Debug.Log(obj_index);
-
-        if(ItemInven.ContainsKey(obj_index))
-        {
-            ItemInven.Add(obj_index, 1);
-            return false;
-        }
-        else
-        {
-            return true;
-        }
+        return ItemInven.ContainsKey(Buldling_ID);
     }
 
     public void Set_Limit_InstallOBJ(int Buliding_index)
@@ -303,6 +293,15 @@ public class UserManager : MonoBehaviour {
         {
             RecvInstallObjData data = JsonReader.Deserialize<RecvInstallObjData>(JsonWriter.Serialize(info.Value));
 
+            if (!ItemInven.ContainsKey(data.Buliding_ID))
+            {
+                ItemInven.Add(data.Buliding_ID, 1);
+            }
+            else
+            {
+                ItemInven[data.Buliding_ID] += 1;
+            }
+
             if (data.Check_Install)
             {
                 Vector3 Pos = new Vector3(data.Pos_x, data.Pos_y, data.Pos_z);
@@ -310,19 +309,11 @@ public class UserManager : MonoBehaviour {
 
                 StoreManager.Get_Inctance().Create_Install_OBJ(data.Obj_Index, data.Buliding_ID, Pos, Rot);
                 Set_Limit_InstallOBJ(data.Buliding_ID);
+                StoreManager.Get_Inctance().Update_Item_Limit_UI(data.Buliding_ID);
             }
             else
             {
                 Inventory_UI_Action.Get_Inctance().Create_ItemButton(StoreManager.Get_Inctance().Get_ItemInfo(data.Buliding_ID), data.Obj_Index, null);
-            }
-
-            if(!ItemInven.ContainsKey(data.Buliding_ID))
-            {
-                ItemInven.Add(data.Buliding_ID, 1);
-            }
-            else
-            {
-                ItemInven[data.Buliding_ID] += 1;
             }
         }
     }
